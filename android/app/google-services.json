@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "734438758739",
+    "project_id": "eict-spaces",
+    "storage_bucket": "eict-spaces.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:734438758739:android:dcb42652a6bc94257129a6",
+        "android_client_info": {
+          "package_name": "com.example.eict_scheduling_test1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "734438758739-ilepdu4uvn3023p8mrmhpdoq9c0ggnjb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBsYCI6UYXnbCQFiittyGLtXmODLr85rU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "734438758739-ilepdu4uvn3023p8mrmhpdoq9c0ggnjb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
