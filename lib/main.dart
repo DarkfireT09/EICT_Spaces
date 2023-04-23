@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   var db = FirebaseFirestore.instance;
 
-  /*getSpaces(db);*/
+  
 
   @override
   Widget build(BuildContext context) {
