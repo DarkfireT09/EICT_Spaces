@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eict_scheduling_test1/pages/SpaceDetail.dart';
+import 'package:eict_scheduling_test1/pages/space_Detail.dart';
 import 'package:eict_scheduling_test1/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

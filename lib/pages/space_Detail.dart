@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:eict_scheduling_test1/pages/date_picker.dart';
 
 class SpaceDetail extends StatelessWidget {
   const SpaceDetail({Key? key}) : super(key: key);
@@ -9,7 +10,7 @@ class SpaceDetail extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Space Detail'),
       ),
-      body: Center(
+      /*body: Center(
         //put a detepicker here
         child: CalendarDatePicker(
           initialDate: DateTime.now(),
@@ -20,7 +21,18 @@ class SpaceDetail extends StatelessWidget {
           },
         ),
 
-      ),
+      ),*/
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => DatePicker()),
+            );
+          },
+          child: const Text('Go to date picker'),
+        ),
+      )
     );
   }
 }
