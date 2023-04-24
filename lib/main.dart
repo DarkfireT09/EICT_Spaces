@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const SpaceDetail(),
+                                      builder: (context) => SpaceDetail(),
                                     ),
                                   );
                                 },
