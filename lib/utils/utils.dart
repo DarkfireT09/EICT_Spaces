@@ -10,7 +10,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<List> getSpaces() async {
   var db = FirebaseFirestore.instance;
-  List spacesList = [];
   var spacesCollection = db.collection('spaces');
   QuerySnapshot querySnapshot = await spacesCollection.get();
   List<QueryDocumentSnapshot> spaces = querySnapshot.docs;
