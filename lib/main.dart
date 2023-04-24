@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eict_scheduling_test1/pages/space_Detail.dart';
+import 'package:eict_scheduling_test1/ui/widgets/dialogs/filter_dialog.dart';
 import 'package:eict_scheduling_test1/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,7 +22,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(useMaterial3: true),
+        theme: ThemeData(
+            useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green)
+        ),
         home: const MyHomePage(title: 'EICT Spaces'));
   }
 }
@@ -89,7 +93,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                       Radius.circular(12)),
                                 ),
                                 onTap: () {
-                                  print('Room $index');
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -180,10 +183,14 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             },
           )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => getFilterDialog(context)
+        ),
+        tooltip: 'Filtrar',
+        icon: const Icon(Icons.tune),
+        label: Text('Filtrar'),
       ),
     );
   }
