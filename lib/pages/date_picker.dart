@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'day_Selection.dart';
+
 class DatePicker extends StatefulWidget {
   DatePicker({Key? key}) : super(key: key);
 
@@ -56,7 +58,13 @@ class _DatePickerState extends State<DatePicker> {
             Container(
               margin: const EdgeInsets.only(top: 20),
               child: ElevatedButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DayCalendar()),
+                    );
+
+                  },
                   child: const Text('Reservar')
               ),
             ),
