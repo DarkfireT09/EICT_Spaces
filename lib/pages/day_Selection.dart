@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 
-
 /// The app which hosts the home page which contains the calendar on it.
 class CalendarApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Calendar Demo', theme: ThemeData(useMaterial3: true), home: DayCalendar());
+    return MaterialApp(
+        title: 'Calendar Demo',
+        theme: ThemeData(useMaterial3: true),
+        home: DayCalendar());
   }
 }
 
@@ -22,70 +24,97 @@ class DayCalendar extends StatefulWidget {
 }
 
 class _DayCalendarState extends State<DayCalendar> {
+  var count = 0;
   final List<Meeting> meetings = <Meeting>[
     // add meeting at 2023 april 24 9:00 to 11:00
     Meeting('Meeting', DateTime(2023, 4, 25, 9), DateTime(2023, 4, 25, 11),
-        Colors.green, false),
+        Colors.green, false, true),
     Meeting('Meeting', DateTime(2023, 4, 25, 15), DateTime(2023, 4, 25, 17),
-        Colors.green, false),
-    Meeting("Non Availeable", DateTime(2023, 4, 25, 0), DateTime(2023, 4, 25, 7), Colors.black, false),
-    Meeting("Non Availeable", DateTime(2023, 4, 25, 18), DateTime(2023, 4, 25, 24), Colors.black, false),
-
+        Colors.green, false, true),
+    Meeting("Non Availeable", DateTime(2023, 4, 25, 0),
+        DateTime(2023, 4, 25, 7), Colors.black, false, true),
+    Meeting("Non Availeable", DateTime(2023, 4, 25, 18),
+        DateTime(2023, 4, 25, 24), Colors.black, false, true),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: SfCalendar(
-          view: CalendarView.day,
-          dataSource: MeetingDataSource(_getDataSource()),
-          // ontap add 2 hours appointment to the calendar meetings cannot collide
-          onTap: (CalendarTapDetails details) async {
-            if (details.targetElement == CalendarElement.calendarCell) {
-              var interval = getNearestMeetings(details.date!);
-              // print("start: ${interval[0].to.hour} end: ${interval[1].from.hour}");
-              print("start: ${interval[0].to} end: ${interval[1].from}");
+      view: CalendarView.day,
+      dataSource: MeetingDataSource(_getDataSource()),
 
-              await showTimeRangePicker(
-                context: context,
-                start: TimeOfDay(
-                    hour: interval[0].to.hour, minute: interval[0].to.minute),
-                end: TimeOfDay(hour: interval[0].to.hour + 1, minute: 0),
-                interval: const Duration(minutes: 30),
-                disabledTime: TimeRange(
-                  startTime: TimeOfDay(
-                      hour: interval[1].from.hour, minute: interval[1].from.minute),
-                  endTime: TimeOfDay(
-                      hour: interval[0].to.hour, minute: interval[0].to.minute),
+      onTap: (CalendarTapDetails details) async {
+        List<Meeting> interval = getNearestMeetings(details.date!);
+        bool changeCheck = false;
+        Meeting? currentMeeting;
+        if (details.targetElement == CalendarElement.appointment) {
+          currentMeeting = details.appointments![0];
+          print(currentMeeting!.from);
+          if (!details.appointments![0].isConfirmed) {
+            // interval = [currentMeeting, currentMeeting];
+            changeCheck = true;
+          }
+        }
 
-                  // startTime:  TimeOfDay(hour: 15, minute: 0),
-                  // endTime: TimeOfDay(hour: 11, minute: 0),
-                ),
-                use24HourFormat: false,
-                padding: 10,
-                strokeWidth: 4,
-                handlerRadius: 14,
-                snap: true,
-                ticks: 48,
-              );
+        if (details.targetElement == CalendarElement.calendarCell || changeCheck) {
 
-              setState(() {
-                // _getDataSource().add(Meeting(
-                //     'Meeting',
-                //     details.date!,
-                //     details.date!.add(const Duration(hours: 1)),
-                //     Colors.blue,
-                //     false));
-              });
-            }
-          },
 
-          // by default the month appointment display mode set as Indicator, we can
-          // change the display mode as appointment using the appointment display
-          // mode property
-          monthViewSettings: const MonthViewSettings(
-              appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
-        ));
+          // print("start: ${interval[0].to.hour} end: ${interval[1].from.hour}");
+          // print("start: ${interval[0].to} end: ${interval[1].from}");
+
+          TimeRange result = await showTimeRangePicker(
+            context: context,
+            start: TimeOfDay(hour: changeCheck ? currentMeeting!.from.hour : details.date!.hour, minute: 0),
+            end: TimeOfDay(hour: details.date!.hour + 1, minute: 0),
+            interval: const Duration(minutes: 30),
+            disabledTime: TimeRange(
+              startTime: TimeOfDay(
+                  hour: interval[1].from.hour, minute: interval[1].from.minute),
+              endTime: TimeOfDay(
+                  hour: interval[0].to.hour, minute: interval[0].to.minute),
+
+              // startTime:  TimeOfDay(hour: 15, minute: 0),
+              // endTime: TimeOfDay(hour: 11, minute: 0),
+            ),
+            use24HourFormat: false,
+            padding: 10,
+            strokeWidth: 4,
+            handlerRadius: 14,
+            snap: true,
+            ticks: 48,
+          );
+          if (result == null) return;
+          print(result);
+          DateTime start = DateTime(
+              details.date!.year,
+              details.date!.month,
+              details.date!.day,
+              result.startTime.hour,
+              result.startTime.minute);
+          DateTime end = DateTime(details.date!.year, details.date!.month,
+              details.date!.day, result.endTime.hour, result.endTime.minute);
+          count++;
+
+          setState(() {
+            // _getDataSource().add(Meeting(
+            //     'Meeting',
+            //     details.date!,
+            //     details.date!.add(const Duration(hours: 1)),
+            //     Colors.blue,
+            //     false));
+            _getDataSource().add(Meeting(
+                'Test $count', start, end, Colors.yellow, false, false));
+          });
+        }
+      },
+
+      // by default the month appointment display mode set as Indicator, we can
+      // change the display mode as appointment using the appointment display
+      // mode property
+      monthViewSettings: const MonthViewSettings(
+          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+    ));
   }
 
   // function that gets the nearest meeting before and after to the given date and return both
@@ -97,9 +126,9 @@ class _DayCalendarState extends State<DayCalendar> {
     var now = DateTime.now();
 
     // find the nearest meeting before the given date
-    var before =
-    meetings.lastWhere((element) => element.to.isBefore(date));
-    print(before.to);
+    var before = meetings.lastWhere(
+        (element) => element.to.isBefore(date.add(const Duration(minutes: 1))));
+    // print(before.to);
     // find the nearest meeting after the given date
     var after = meetings.firstWhere((element) => element.from.isAfter(date));
     return [before, after];
@@ -177,7 +206,8 @@ class MeetingDataSource extends CalendarDataSource {
 /// information about the event data which will be rendered in calendar.
 class Meeting {
   /// Creates a meeting class with required details.
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
+  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay,
+      this.isConfirmed);
 
   /// Event name which is equivalent to subject property of [Appointment].
   String eventName;
@@ -193,4 +223,6 @@ class Meeting {
 
   /// IsAllDay which is equivalent to isAllDay property of [Appointment].
   bool isAllDay;
+
+  bool isConfirmed = false;
 }
