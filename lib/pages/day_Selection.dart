@@ -32,89 +32,165 @@ class _DayCalendarState extends State<DayCalendar> {
     Meeting('Meeting', DateTime(2023, 4, 25, 15), DateTime(2023, 4, 25, 17),
         Colors.green, false, true),
     Meeting("Non Availeable", DateTime(2023, 4, 25, 0),
-        DateTime(2023, 4, 25, 7), Colors.black, false, true),
+        DateTime(2023, 4, 25, 7), const Color(0x00000000), false, true),
     Meeting("Non Availeable", DateTime(2023, 4, 25, 18),
-        DateTime(2023, 4, 25, 24), Colors.black, false, true),
+        DateTime(2023, 4, 25, 24), const Color(0x00000000), false, true),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SfCalendar(
-      view: CalendarView.day,
-      dataSource: MeetingDataSource(_getDataSource()),
-
-      onTap: (CalendarTapDetails details) async {
-        List<Meeting> interval = getNearestMeetings(details.date!);
-        bool changeCheck = false;
-        Meeting? currentMeeting;
-        if (details.targetElement == CalendarElement.appointment) {
-          currentMeeting = details.appointments![0];
-          print(currentMeeting!.from);
-          if (!details.appointments![0].isConfirmed) {
-            // interval = [currentMeeting, currentMeeting];
-            changeCheck = true;
+      body: SfCalendar(
+        view: CalendarView.day,
+        dataSource: MeetingDataSource(_getDataSource()),
+        onLongPress: (CalendarLongPressDetails details) {
+          if (details.targetElement == CalendarElement.appointment) {
+            final Meeting appointmentDetails = details.appointments![0];
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text(appointmentDetails.eventName),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                            'From: ${appointmentDetails.from.toString().substring(0, 16)}'),
+                        Text(
+                            'To: ${appointmentDetails.to.toString().substring(0, 16)}'),
+                      ],
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Delete'),
+                        onPressed: () {
+                          setState(() {
+                            meetings.remove(details.appointments![0]);
+                          });
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  );
+                });
           }
-        }
+        },
 
-        if (details.targetElement == CalendarElement.calendarCell || changeCheck) {
+        onTap: (CalendarTapDetails details) async {
+          List<Meeting> interval = getNearestMeetings(details.date!);
+          bool changeCheck = false;
+          Meeting? currentMeeting;
+          if (details.targetElement == CalendarElement.appointment) {
+            currentMeeting = details.appointments![0];
+            print(currentMeeting!.from);
+            if (!details.appointments![0].isConfirmed) {
+              // interval = [currentMeeting, currentMeeting];
+              changeCheck = true;
+            }
+          }
 
+          if (details.targetElement == CalendarElement.calendarCell ||
+              changeCheck) {
+            // print("start: ${interval[0].to.hour} end: ${interval[1].from.hour}");
+            // print("start: ${interval[0].to} end: ${interval[1].from}");
 
-          // print("start: ${interval[0].to.hour} end: ${interval[1].from.hour}");
-          // print("start: ${interval[0].to} end: ${interval[1].from}");
+            TimeRange result = await showTimeRangePicker(
+              context: context,
+              start: TimeOfDay(
+                  hour: changeCheck
+                      ? currentMeeting!.from.hour
+                      : details.date!.hour,
+                  minute: changeCheck ? currentMeeting!.from.minute : 0),
+              end: TimeOfDay(
+                  hour: changeCheck
+                      ? currentMeeting!.to.hour
+                      : details.date!.hour + 1,
+                  minute: changeCheck ? currentMeeting!.to.minute : 0),
+              interval: const Duration(minutes: 30),
+              disabledTime: TimeRange(
+                startTime: TimeOfDay(
+                    hour: interval[1].from.hour,
+                    minute: interval[1].from.minute),
+                endTime: TimeOfDay(
+                    hour: interval[0].to.hour, minute: interval[0].to.minute),
 
-          TimeRange result = await showTimeRangePicker(
-            context: context,
-            start: TimeOfDay(hour: changeCheck ? currentMeeting!.from.hour : details.date!.hour, minute: 0),
-            end: TimeOfDay(hour: details.date!.hour + 1, minute: 0),
-            interval: const Duration(minutes: 30),
-            disabledTime: TimeRange(
-              startTime: TimeOfDay(
-                  hour: interval[1].from.hour, minute: interval[1].from.minute),
-              endTime: TimeOfDay(
-                  hour: interval[0].to.hour, minute: interval[0].to.minute),
+                // startTime:  TimeOfDay(hour: 15, minute: 0),
+                // endTime: TimeOfDay(hour: 11, minute: 0),
+              ),
+              use24HourFormat: false,
+              padding: 10,
+              strokeWidth: 4,
+              handlerRadius: 14,
+              snap: true,
+              ticks: 48,
+            );
+            if (result == null) return;
+            print(result);
+            if (changeCheck) {
+              setState(() {
+                currentMeeting?.from = DateTime(
+                    details.date!.year,
+                    details.date!.month,
+                    details.date!.day,
+                    result.startTime.hour,
+                    result.startTime.minute);
+                currentMeeting?.to = DateTime(
+                    details.date!.year,
+                    details.date!.month,
+                    details.date!.day,
+                    result.endTime.hour,
+                    result.endTime.minute);
+              });
+              return;
+            }
+            DateTime start = DateTime(
+                details.date!.year,
+                details.date!.month,
+                details.date!.day,
+                result.startTime.hour,
+                result.startTime.minute);
+            DateTime end = DateTime(details.date!.year, details.date!.month,
+                details.date!.day, result.endTime.hour, result.endTime.minute);
+            count++;
 
-              // startTime:  TimeOfDay(hour: 15, minute: 0),
-              // endTime: TimeOfDay(hour: 11, minute: 0),
-            ),
-            use24HourFormat: false,
-            padding: 10,
-            strokeWidth: 4,
-            handlerRadius: 14,
-            snap: true,
-            ticks: 48,
-          );
-          if (result == null) return;
-          print(result);
-          DateTime start = DateTime(
-              details.date!.year,
-              details.date!.month,
-              details.date!.day,
-              result.startTime.hour,
-              result.startTime.minute);
-          DateTime end = DateTime(details.date!.year, details.date!.month,
-              details.date!.day, result.endTime.hour, result.endTime.minute);
-          count++;
+            setState(() {
+              // _getDataSource().add(Meeting(
+              //     'Meeting',
+              //     details.date!,
+              //     details.date!.add(const Duration(hours: 1)),
+              //     Colors.blue,
+              //     false));
 
+              _getDataSource().add(Meeting('Test $count', start, end,
+                  const Color(0xff01454f), false, false));
+            });
+          }
+        },
+
+        // by default the month appointment display mode set as Indicator, we can
+        // change the display mode as appointment using the appointment display
+        // mode property
+        monthViewSettings: const MonthViewSettings(
+            appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // remove all not confirmed meetings
+          count = 0;
           setState(() {
-            // _getDataSource().add(Meeting(
-            //     'Meeting',
-            //     details.date!,
-            //     details.date!.add(const Duration(hours: 1)),
-            //     Colors.blue,
-            //     false));
-            _getDataSource().add(Meeting(
-                'Test $count', start, end, Colors.yellow, false, false));
+            meetings.removeWhere((element) => !element.isConfirmed);
           });
-        }
-      },
-
-      // by default the month appointment display mode set as Indicator, we can
-      // change the display mode as appointment using the appointment display
-      // mode property
-      monthViewSettings: const MonthViewSettings(
-          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
-    ));
+        },
+        child: const Icon(Icons.delete),
+      ),
+    );
   }
 
   // function that gets the nearest meeting before and after to the given date and return both
@@ -147,11 +223,6 @@ class _DayCalendarState extends State<DayCalendar> {
   }
 
   List<Meeting> _getDataSource() {
-    // final DateTime today = DateTime.now();
-    // final DateTime startTime = DateTime(today.year, today.month, today.day, 9);
-    // final DateTime endTime = startTime.add(const Duration(hours: 2));
-    // meetings.add(Meeting(
-    //     'Conference', startTime, endTime, const Color(0xFF0F8644), false));
     return meetings;
   }
 }
