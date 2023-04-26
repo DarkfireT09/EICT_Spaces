@@ -68,7 +68,7 @@ class _DayCalendarState extends State<DayCalendar> {
                           Navigator.pop(context);
                         },
                       ),
-                      TextButton(
+                      !details.appointments![0].isConfirmed ? TextButton(
                         child: const Text('Delete'),
                         onPressed: () {
                           setState(() {
@@ -76,7 +76,7 @@ class _DayCalendarState extends State<DayCalendar> {
                           });
                           Navigator.pop(context);
                         },
-                      )
+                      ) : Container()
                     ],
                   );
                 });
