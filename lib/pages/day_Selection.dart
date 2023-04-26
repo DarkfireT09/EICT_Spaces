@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 
@@ -31,9 +32,9 @@ class _DayCalendarState extends State<DayCalendar> {
         Colors.green, false, true),
     Meeting('Meeting', DateTime(2023, 4, 25, 15), DateTime(2023, 4, 25, 17),
         Colors.green, false, true),
-    Meeting("Non Availeable", DateTime(2023, 4, 25, 0),
-        DateTime(2023, 4, 25, 7), const Color(0x00000000), false, true),
-    Meeting("Non Availeable", DateTime(2023, 4, 25, 18),
+    Meeting("Not available", DateTime(2023, 4, 25, 0), DateTime(2023, 4, 25, 7),
+        const Color(0x00000000), false, true),
+    Meeting("Not available", DateTime(2023, 4, 25, 18),
         DateTime(2023, 4, 25, 24), const Color(0x00000000), false, true),
   ];
 
@@ -68,15 +69,17 @@ class _DayCalendarState extends State<DayCalendar> {
                           Navigator.pop(context);
                         },
                       ),
-                      !details.appointments![0].isConfirmed ? TextButton(
-                        child: const Text('Delete'),
-                        onPressed: () {
-                          setState(() {
-                            meetings.remove(details.appointments![0]);
-                          });
-                          Navigator.pop(context);
-                        },
-                      ) : Container()
+                      !details.appointments![0].isConfirmed
+                          ? TextButton(
+                              child: const Text('Delete'),
+                              onPressed: () {
+                                setState(() {
+                                  meetings.remove(details.appointments![0]);
+                                });
+                                Navigator.pop(context);
+                              },
+                            )
+                          : Container()
                     ],
                   );
                 });
@@ -103,6 +106,7 @@ class _DayCalendarState extends State<DayCalendar> {
 
             TimeRange result = await showTimeRangePicker(
               context: context,
+              minDuration: const Duration(hours: 1),
               start: TimeOfDay(
                   hour: changeCheck
                       ? currentMeeting!.from.hour
@@ -113,7 +117,7 @@ class _DayCalendarState extends State<DayCalendar> {
                       ? currentMeeting!.to.hour
                       : details.date!.hour + 1,
                   minute: changeCheck ? currentMeeting!.to.minute : 0),
-              interval: const Duration(minutes: 30),
+              interval: const Duration(hours: 1),
               disabledTime: TimeRange(
                 startTime: TimeOfDay(
                     hour: interval[1].from.hour,
@@ -125,11 +129,24 @@ class _DayCalendarState extends State<DayCalendar> {
                 // endTime: TimeOfDay(hour: 11, minute: 0),
               ),
               use24HourFormat: false,
-              padding: 10,
-              strokeWidth: 4,
+              padding: 30,
+              strokeWidth: 8,
               handlerRadius: 14,
               snap: true,
               ticks: 48,
+              labels: [
+                "12 am",
+                "3 am",
+                "6 am",
+                "9 am",
+                "12 pm",
+                "3 pm",
+                "6 pm",
+                "9 pm"
+              ].asMap().entries.map((e) {
+                return ClockLabel.fromIndex(
+                    idx: e.key, length: 8, text: e.value);
+              }).toList(),
             );
             if (result == null) return;
             print(result);
@@ -190,6 +207,7 @@ class _DayCalendarState extends State<DayCalendar> {
         },
         child: const Icon(Icons.delete),
       ),
+
     );
   }
 
