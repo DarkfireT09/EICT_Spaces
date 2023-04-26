@@ -42,68 +42,71 @@ class _DayCalendarState extends State<DayCalendar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SfCalendar(
-        view: CalendarView.month,
-        controller: _calendarController,
-        allowedViews: const [CalendarView.day, CalendarView.month],
-        dataSource: MeetingDataSource(_getDataSource()),
-        onLongPress: (CalendarLongPressDetails details) {
-          if (details.targetElement == CalendarElement.appointment) {
-            final Meeting appointmentDetails = details.appointments![0];
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(appointmentDetails.eventName),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                            'From: ${appointmentDetails.from.toString().substring(0, 16)}'),
-                        Text(
-                            'To: ${appointmentDetails.to.toString().substring(0, 16)}'),
-                      ],
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('OK'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+      body: Container(
+        margin: const EdgeInsets.only(top: 20),
+        child: SfCalendar(
+          view: CalendarView.month,
+          controller: _calendarController,
+          allowedViews: const [CalendarView.day, CalendarView.month],
+          dataSource: MeetingDataSource(_getDataSource()),
+          onLongPress: (CalendarLongPressDetails details) {
+            if (details.targetElement == CalendarElement.appointment) {
+              final Meeting appointmentDetails = details.appointments![0];
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text(appointmentDetails.eventName),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                              'From: ${appointmentDetails.from.toString().substring(0, 16)}'),
+                          Text(
+                              'To: ${appointmentDetails.to.toString().substring(0, 16)}'),
+                        ],
                       ),
-                      !details.appointments![0].isConfirmed
-                          ? TextButton(
-                        child: const Text('Delete'),
-                        onPressed: () {
-                          setState(() {
-                            meetings.remove(details.appointments![0]);
-                          });
-                          Navigator.pop(context);
-                        },
-                      )
-                          : Container()
-                    ],
-                  );
-                });
-          }
-        },
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('OK'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        !details.appointments![0].isConfirmed
+                            ? TextButton(
+                          child: const Text('Delete'),
+                          onPressed: () {
+                            setState(() {
+                              meetings.remove(details.appointments![0]);
+                            });
+                            Navigator.pop(context);
+                          },
+                        )
+                            : Container()
+                      ],
+                    );
+                  });
+            }
+          },
 
-        onTap: (CalendarTapDetails details) {
-          if (_calendarController.view == CalendarView.month &&
-              details.targetElement == CalendarElement.calendarCell) {
-            _calendarController.view = CalendarView.day;
-            _calendarController.displayDate = details.date!;
-          } else if (_calendarController.view == CalendarView.day) {
-            _dayTapUserHandler(details);
-          }
-        },
+          onTap: (CalendarTapDetails details) {
+            if (_calendarController.view == CalendarView.month &&
+                details.targetElement == CalendarElement.calendarCell) {
+              _calendarController.view = CalendarView.day;
+              _calendarController.displayDate = details.date!;
+            } else if (_calendarController.view == CalendarView.day) {
+              _dayTapUserHandler(details);
+            }
+          },
 
-        // by default the month appointment display mode set as Indicator, we can
-        // change the display mode as appointment using the appointment display
-        // mode property
-        monthViewSettings: const MonthViewSettings(
-            appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+          // by default the month appointment display mode set as Indicator, we can
+          // change the display mode as appointment using the appointment display
+          // mode property
+          monthViewSettings: const MonthViewSettings(
+              appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
