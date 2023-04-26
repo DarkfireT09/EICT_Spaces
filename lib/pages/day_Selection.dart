@@ -26,6 +26,7 @@ class DayCalendar extends StatefulWidget {
 
 class _DayCalendarState extends State<DayCalendar> {
   var count = 0;
+  final CalendarController _calendarController = CalendarController();
   final List<Meeting> meetings = <Meeting>[
     // add meeting at 2023 april 24 9:00 to 11:00
     Meeting('Meeting', DateTime(2023, 4, 25, 9), DateTime(2023, 4, 25, 11),
@@ -42,7 +43,9 @@ class _DayCalendarState extends State<DayCalendar> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SfCalendar(
-        view: CalendarView.day,
+        view: CalendarView.month,
+        controller: _calendarController,
+        allowedViews: const [CalendarView.day, CalendarView.month],
         dataSource: MeetingDataSource(_getDataSource()),
         onLongPress: (CalendarLongPressDetails details) {
           if (details.targetElement == CalendarElement.appointment) {
@@ -71,14 +74,14 @@ class _DayCalendarState extends State<DayCalendar> {
                       ),
                       !details.appointments![0].isConfirmed
                           ? TextButton(
-                              child: const Text('Delete'),
-                              onPressed: () {
-                                setState(() {
-                                  meetings.remove(details.appointments![0]);
-                                });
-                                Navigator.pop(context);
-                              },
-                            )
+                        child: const Text('Delete'),
+                        onPressed: () {
+                          setState(() {
+                            meetings.remove(details.appointments![0]);
+                          });
+                          Navigator.pop(context);
+                        },
+                      )
                           : Container()
                     ],
                   );
@@ -86,108 +89,13 @@ class _DayCalendarState extends State<DayCalendar> {
           }
         },
 
-        onTap: (CalendarTapDetails details) async {
-          List<Meeting> interval = getNearestMeetings(details.date!);
-          bool changeCheck = false;
-          Meeting? currentMeeting;
-          if (details.targetElement == CalendarElement.appointment) {
-            currentMeeting = details.appointments![0];
-            print(currentMeeting!.from);
-            if (!details.appointments![0].isConfirmed) {
-              // interval = [currentMeeting, currentMeeting];
-              changeCheck = true;
-            }
-          }
-
-          if (details.targetElement == CalendarElement.calendarCell ||
-              changeCheck) {
-            // print("start: ${interval[0].to.hour} end: ${interval[1].from.hour}");
-            // print("start: ${interval[0].to} end: ${interval[1].from}");
-
-            TimeRange result = await showTimeRangePicker(
-              context: context,
-              minDuration: const Duration(hours: 1),
-              start: TimeOfDay(
-                  hour: changeCheck
-                      ? currentMeeting!.from.hour
-                      : details.date!.hour,
-                  minute: changeCheck ? currentMeeting!.from.minute : 0),
-              end: TimeOfDay(
-                  hour: changeCheck
-                      ? currentMeeting!.to.hour
-                      : details.date!.hour + 1,
-                  minute: changeCheck ? currentMeeting!.to.minute : 0),
-              interval: const Duration(hours: 1),
-              disabledTime: TimeRange(
-                startTime: TimeOfDay(
-                    hour: interval[1].from.hour,
-                    minute: interval[1].from.minute),
-                endTime: TimeOfDay(
-                    hour: interval[0].to.hour, minute: interval[0].to.minute),
-
-                // startTime:  TimeOfDay(hour: 15, minute: 0),
-                // endTime: TimeOfDay(hour: 11, minute: 0),
-              ),
-              use24HourFormat: false,
-              padding: 30,
-              strokeWidth: 8,
-              handlerRadius: 14,
-              snap: true,
-              ticks: 48,
-              labels: [
-                "12 am",
-                "3 am",
-                "6 am",
-                "9 am",
-                "12 pm",
-                "3 pm",
-                "6 pm",
-                "9 pm"
-              ].asMap().entries.map((e) {
-                return ClockLabel.fromIndex(
-                    idx: e.key, length: 8, text: e.value);
-              }).toList(),
-            );
-            if (result == null) return;
-            print(result);
-            if (changeCheck) {
-              setState(() {
-                currentMeeting?.from = DateTime(
-                    details.date!.year,
-                    details.date!.month,
-                    details.date!.day,
-                    result.startTime.hour,
-                    result.startTime.minute);
-                currentMeeting?.to = DateTime(
-                    details.date!.year,
-                    details.date!.month,
-                    details.date!.day,
-                    result.endTime.hour,
-                    result.endTime.minute);
-              });
-              return;
-            }
-            DateTime start = DateTime(
-                details.date!.year,
-                details.date!.month,
-                details.date!.day,
-                result.startTime.hour,
-                result.startTime.minute);
-            DateTime end = DateTime(details.date!.year, details.date!.month,
-                details.date!.day, result.endTime.hour, result.endTime.minute);
-            count++;
-
-            setState(() {
-              // _getDataSource().add(Meeting(
-              //     'Meeting',
-              //     details.date!,
-              //     details.date!.add(const Duration(hours: 1)),
-              //     Colors.blue,
-              //     false));
-
-              _getDataSource().add(Meeting('Test $count', start, end,
-                  const Color(0xff01454f), false, false));
-            });
+        onTap: (CalendarTapDetails details) {
+          if (_calendarController.view == CalendarView.month &&
+              details.targetElement == CalendarElement.calendarCell) {
+            _calendarController.view = CalendarView.day;
+            _calendarController.displayDate = details.date!;
+          } else if (_calendarController.view == CalendarView.day) {
+            _dayTapUserHandler(details);
           }
         },
 
@@ -209,6 +117,106 @@ class _DayCalendarState extends State<DayCalendar> {
       ),
 
     );
+  }
+
+
+  void _dayTapUserHandler(details) async {
+    List<Meeting> interval = getNearestMeetings(details.date!);
+    bool changeCheck = false;
+    Meeting? currentMeeting;
+    if (details.targetElement == CalendarElement.appointment) {
+      currentMeeting = details.appointments![0];
+      print(currentMeeting!.from);
+      if (!details.appointments![0].isConfirmed) {
+        // interval = [currentMeeting, currentMeeting];
+        changeCheck = true;
+      }
+    }
+
+    if (details.targetElement == CalendarElement.calendarCell ||
+        changeCheck) {
+      // print("start: ${interval[0].to.hour} end: ${interval[1].from.hour}");
+      // print("start: ${interval[0].to} end: ${interval[1].from}");
+
+      TimeRange result = await showTimeRangePicker(
+        context: context,
+        minDuration: const Duration(hours: 1),
+        start: TimeOfDay(
+            hour: changeCheck
+                ? currentMeeting!.from.hour
+                : details.date!.hour,
+            minute: changeCheck ? currentMeeting!.from.minute : 0),
+        end: TimeOfDay(
+            hour: changeCheck
+                ? currentMeeting!.to.hour
+                : details.date!.hour + 1,
+            minute: changeCheck ? currentMeeting!.to.minute : 0),
+        interval: const Duration(hours: 1),
+        disabledTime: TimeRange(
+          startTime: TimeOfDay(
+              hour: interval[1].from.hour,
+              minute: interval[1].from.minute),
+          endTime: TimeOfDay(
+              hour: interval[0].to.hour, minute: interval[0].to.minute),
+
+          // startTime:  TimeOfDay(hour: 15, minute: 0),
+          // endTime: TimeOfDay(hour: 11, minute: 0),
+        ),
+        use24HourFormat: false,
+        padding: 30,
+        strokeWidth: 8,
+        handlerRadius: 14,
+        snap: true,
+        ticks: 48,
+        labels: [
+          "12 am",
+          "3 am",
+          "6 am",
+          "9 am",
+          "12 pm",
+          "3 pm",
+          "6 pm",
+          "9 pm"
+        ].asMap().entries.map((e) {
+          return ClockLabel.fromIndex(
+              idx: e.key, length: 8, text: e.value);
+        }).toList(),
+      );
+      if (result == null) return;
+      print(result);
+      if (changeCheck) {
+        setState(() {
+          currentMeeting?.from = DateTime(
+              details.date!.year,
+              details.date!.month,
+              details.date!.day,
+              result.startTime.hour,
+              result.startTime.minute);
+          currentMeeting?.to = DateTime(
+              details.date!.year,
+              details.date!.month,
+              details.date!.day,
+              result.endTime.hour,
+              result.endTime.minute);
+        });
+        return;
+      }
+      DateTime start = DateTime(
+          details.date!.year,
+          details.date!.month,
+          details.date!.day,
+          result.startTime.hour,
+          result.startTime.minute);
+      DateTime end = DateTime(details.date!.year, details.date!.month,
+          details.date!.day, result.endTime.hour, result.endTime.minute);
+      count++;
+
+      setState(() {
+
+        _getDataSource().add(Meeting('Test $count', start, end,
+            const Color(0xff01454f), false, false));
+      });
+    }
   }
 
   // function that gets the nearest meeting before and after to the given date and return both
