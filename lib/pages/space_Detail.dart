@@ -10,29 +10,12 @@ class SpaceDetail extends StatelessWidget {
         title: const Text('Space Detail'),
       ),
       body: Center(
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => DatePicker()),
-            );
-          },
-          child: Container(
+        child: Container(
             width: double.infinity,
             height: double.infinity,
             child: Column(
               children: [
-                // ClipRRect(
-                //   //width: double.infinity,
-                //   borderRadius: const BorderRadius.all(
-                //       Radius.circular(10)),
-                //   child: Image.network(
-                //     'https://picsum.photos/500',
-                //     width: double.infinity,
-                //     fit: BoxFit.cover,
-                //   ),
-                // ),
-                Expanded(
+                Expanded( // This is the image
                   flex: 1,
                   child: SizedBox(
                     width: double.infinity,
@@ -100,8 +83,17 @@ class SpaceDetail extends StatelessWidget {
               ],
             ),
           ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) =>  DatePicker(),
         ),
+        tooltip: 'Reservar',
+        icon: const Icon(Icons.arrow_circle_right),
+        label: Text('Reservar'),
       ),
     );
+
   }
 }
