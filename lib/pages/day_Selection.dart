@@ -1,7 +1,11 @@
+import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 //import "package:flutter_speed_dial/flutter_speed_dial.dart";
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:time_range_picker/time_range_picker.dart';
+import 'package:intl/intl.dart';
 
 /// The app which hosts the home page which contains the calendar on it.
 class CalendarApp extends StatelessWidget {
@@ -26,18 +30,72 @@ class DayCalendar extends StatefulWidget {
 
 class _DayCalendarState extends State<DayCalendar> {
   var count = 0;
+  // TODO: Controller variables
+  var id = "TkrYtpWGQqNxeGHFaPDs";
+  var name = "New Request";
+  var reason = "lorem ipsum";
+  var by = {
+    "email": "a@a.com",
+    "name": "user",
+    "phone": "1234567890",
+  };
+
+  var db = FirebaseFirestore.instance;
   final CalendarController _calendarController = CalendarController();
-  final List<Meeting> meetings = <Meeting>[
-    // add meeting at 2023 april 24 9:00 to 11:00
-    Meeting('Meeting', DateTime(2023, 4, 25, 9), DateTime(2023, 4, 25, 11),
-        Colors.green, false, true),
-    Meeting('Meeting', DateTime(2023, 4, 25, 15), DateTime(2023, 4, 25, 17),
-        Colors.green, false, true),
-    Meeting("Not available", DateTime(2023, 4, 25, 0), DateTime(2023, 4, 25, 7),
-        const Color(0x00000000), false, true),
-    Meeting("Not available", DateTime(2023, 4, 25, 18),
-        DateTime(2023, 4, 25, 24), const Color(0x00000000), false, true),
-  ];
+  MeetingDataSource? events;
+  // List<Meeting> events.appointments = <Meeting>[
+  //   // add meeting at 2023 april 24 9:00 to 11:00
+  //   Meeting('Meeting', DateTime(2023, 4, 25, 9), DateTime(2023, 4, 25, 11),
+  //       Colors.green, false, true),
+  //   Meeting('Meeting', DateTime(2023, 4, 25, 15), DateTime(2023, 4, 25, 17),
+  //       Colors.green, false, true),
+  //   Meeting("Not available", DateTime(2023, 4, 25, 0), DateTime(2023, 4, 25, 7),
+  //       const Color(0x00000000), false, true),
+  //   Meeting("Not available", DateTime(2023, 4, 25, 18),
+  //       DateTime(2023, 4, 25, 24), const Color(0x00000000), false, true),
+  // ];
+
+  @override
+  void initState() {
+    // _initializeEventColor();
+    getDataFromFireStore().then((results) {
+      SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
+        setState(() {});
+      });
+    });
+    super.initState();
+  }
+
+  Future<void> getDataFromFireStore() async {
+    var snapShotsValue =
+        await db.collection("bookings").where("space_id", isEqualTo: id).get();
+
+    List<Meeting> list = snapShotsValue.docs
+        .map((e) => Meeting(
+              e.data()['name'],
+              e.data()['from'].toDate(),
+              e.data()['to'].toDate(),
+              Colors.green,
+              false,
+              false,
+              e.data()['reason'],
+              e.data()['by'],
+              e.data()['space_id'],
+            ))
+        .toList();
+
+    print(list);
+
+    list.addAll([
+      Meeting('Not available', DateTime(2023, 4, 25, 0),
+          DateTime(2023, 4, 25, 7), Colors.black, false, true, '', by, id),
+      Meeting('Not available', DateTime(2023, 4, 25, 18),
+          DateTime(2023, 4, 25, 24), Colors.black, false, true, '', by, id)
+    ]);
+    setState(() {
+      events = MeetingDataSource(list);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +109,7 @@ class _DayCalendarState extends State<DayCalendar> {
           view: CalendarView.month,
           controller: _calendarController,
           allowedViews: const [CalendarView.day, CalendarView.month],
-          dataSource: MeetingDataSource(_getDataSource()),
+          dataSource: events,
           onLongPress: (CalendarLongPressDetails details) {
             if (details.targetElement == CalendarElement.appointment) {
               final Meeting appointmentDetails = details.appointments![0];
@@ -79,14 +137,15 @@ class _DayCalendarState extends State<DayCalendar> {
                         ),
                         !details.appointments![0].isConfirmed
                             ? TextButton(
-                          child: const Text('Delete'),
-                          onPressed: () {
-                            setState(() {
-                              meetings.remove(details.appointments![0]);
-                            });
-                            Navigator.pop(context);
-                          },
-                        )
+                                child: const Text('Delete'),
+                                onPressed: () {
+                                  setState(() {
+                                    events?.appointments
+                                        ?.remove(details.appointments![0]);
+                                  });
+                                  Navigator.pop(context);
+                                },
+                              )
                             : Container()
                       ],
                     );
@@ -113,18 +172,17 @@ class _DayCalendarState extends State<DayCalendar> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // remove all not confirmed meetings
+          // remove all not confirmed events.appointments
           count = 0;
           setState(() {
-            meetings.removeWhere((element) => !element.isConfirmed);
+            events?.appointments
+                ?.removeWhere((element) => !element.isConfirmed); // TODO update
           });
         },
         child: const Icon(Icons.delete),
       ),
-
     );
   }
-
 
   void _dayTapUserHandler(details) async {
     List<Meeting> interval = getNearestMeetings(details.date!);
@@ -139,8 +197,7 @@ class _DayCalendarState extends State<DayCalendar> {
       }
     }
 
-    if (details.targetElement == CalendarElement.calendarCell ||
-        changeCheck) {
+    if (details.targetElement == CalendarElement.calendarCell || changeCheck) {
       // print("start: ${interval[0].to.hour} end: ${interval[1].from.hour}");
       // print("start: ${interval[0].to} end: ${interval[1].from}");
 
@@ -148,20 +205,16 @@ class _DayCalendarState extends State<DayCalendar> {
         context: context,
         minDuration: const Duration(hours: 1),
         start: TimeOfDay(
-            hour: changeCheck
-                ? currentMeeting!.from.hour
-                : details.date!.hour,
+            hour: changeCheck ? currentMeeting!.from.hour : details.date!.hour,
             minute: changeCheck ? currentMeeting!.from.minute : 0),
         end: TimeOfDay(
-            hour: changeCheck
-                ? currentMeeting!.to.hour
-                : details.date!.hour + 1,
+            hour:
+                changeCheck ? currentMeeting!.to.hour : details.date!.hour + 1,
             minute: changeCheck ? currentMeeting!.to.minute : 0),
         interval: const Duration(hours: 1),
         disabledTime: TimeRange(
           startTime: TimeOfDay(
-              hour: interval[1].from.hour,
-              minute: interval[1].from.minute),
+              hour: interval[1].from.hour, minute: interval[1].from.minute),
           endTime: TimeOfDay(
               hour: interval[0].to.hour, minute: interval[0].to.minute),
 
@@ -184,8 +237,7 @@ class _DayCalendarState extends State<DayCalendar> {
           "6 pm",
           "9 pm"
         ].asMap().entries.map((e) {
-          return ClockLabel.fromIndex(
-              idx: e.key, length: 8, text: e.value);
+          return ClockLabel.fromIndex(idx: e.key, length: 8, text: e.value);
         }).toList(),
       );
       if (result == null) return;
@@ -198,64 +250,75 @@ class _DayCalendarState extends State<DayCalendar> {
               details.date!.day,
               result.startTime.hour,
               result.startTime.minute);
-          currentMeeting?.to = DateTime(
-              details.date!.year,
-              details.date!.month,
-              details.date!.day,
-              result.endTime.hour,
-              result.endTime.minute);
+          currentMeeting?.to = DateTime(details.date!.year, details.date!.month,
+              details.date!.day, result.endTime.hour, result.endTime.minute);
         });
         return;
       }
-      DateTime start = DateTime(
-          details.date!.year,
-          details.date!.month,
-          details.date!.day,
-          result.startTime.hour,
-          result.startTime.minute);
+      DateTime start = DateTime(details.date!.year, details.date!.month,
+          details.date!.day, result.startTime.hour, result.startTime.minute);
       DateTime end = DateTime(details.date!.year, details.date!.month,
           details.date!.day, result.endTime.hour, result.endTime.minute);
       count++;
 
-      setState(() {
+      var newMeeting = Meeting(
+          "Meeting $count", start, end, Colors.green, false, false, reason, by, id);
+      addMeeting(newMeeting);
 
-        _getDataSource().add(Meeting('Test $count', start, end,
-            const Color(0xff01454f), false, false));
+      setState(() {
+        getDataFromFireStore();
       });
     }
+
   }
 
   // function that gets the nearest meeting before and after to the given date and return both
   List<Meeting> getNearestMeetings(DateTime date) {
-    // sort meetings by date
-    meetings.sort((a, b) => a.from.compareTo(b.from));
+    // sort events.appointments by date
+    events?.appointments?.sort((a, b) => a.from.compareTo(b.from));
 
     // meting right now
     var now = DateTime.now();
 
     // find the nearest meeting before the given date
-    var before = meetings.lastWhere(
+    var before = events?.appointments?.lastWhere(
         (element) => element.to.isBefore(date.add(const Duration(minutes: 1))));
     // print(before.to);
     // find the nearest meeting after the given date
-    var after = meetings.firstWhere((element) => element.from.isAfter(date));
+    var after = events?.appointments
+        ?.firstWhere((element) => element.from.isAfter(date));
     return [before, after];
   }
 
-  bool isCollide(DateTime start, DateTime end) {
-    for (var i = 0; i < meetings.length; i++) {
-      if (start.isAfter(meetings[i].from) && start.isBefore(meetings[i].to)) {
-        return true;
-      }
-      if (end.isAfter(meetings[i].from) && end.isBefore(meetings[i].to)) {
-        return true;
-      }
-    }
-    return false;
+  // bool isCollide(DateTime start, DateTime end) {
+  //   var len = events?.appointments?.length;
+  //   for (var i = 0; i < len!; i++) {
+  //     if (start.isAfter(events.appointments[i].from) && start.isBefore(events.appointments[i].to)) {
+  //       return true;
+  //     }
+  //     if (end.isAfter(events.appointments[i].from) && end.isBefore(events.appointments[i].to)) {
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // }
+
+  List? _getDataSource() {
+    return events?.appointments;
   }
 
-  List<Meeting> _getDataSource() {
-    return meetings;
+  void removeMeeting() {}
+
+  void addMeeting(meeting) {
+    db.collection("bookings").add({
+      "by": meeting.by,
+      "name": meeting.eventName,
+      "from": meeting.from,
+      "to": meeting.to,
+      "approved": meeting.isConfirmed,
+      "reason": meeting.reason,
+      "space_id": meeting.space_id
+    });
   }
 }
 
@@ -310,7 +373,7 @@ class MeetingDataSource extends CalendarDataSource {
 class Meeting {
   /// Creates a meeting class with required details.
   Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay,
-      this.isConfirmed);
+      this.isConfirmed, this.reason, this.by, this.space_id);
 
   /// Event name which is equivalent to subject property of [Appointment].
   String eventName;
@@ -328,4 +391,10 @@ class Meeting {
   bool isAllDay;
 
   bool isConfirmed = false;
+
+  String reason;
+
+  Map by;
+
+  String space_id;
 }
