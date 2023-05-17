@@ -14,6 +14,7 @@ class DatePicker extends StatefulWidget {
 class _DatePickerState extends State<DatePicker> {
   DateTime _selectedDate = DateTime.now();
 
+  TextEditingController controller_eventName = TextEditingController();
   TextEditingController controller_name = TextEditingController();
   TextEditingController controller_email = TextEditingController();
   TextEditingController controller_phone = TextEditingController();
@@ -27,8 +28,8 @@ class _DatePickerState extends State<DatePicker> {
       ),
       body: Center(
         //put a detepicker here
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
+          //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Center(
               child: Container(
@@ -42,6 +43,17 @@ class _DatePickerState extends State<DatePicker> {
                     fontWeight: FontWeight.bold,
                   )
                 )
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              margin: const EdgeInsets.only(bottom: 20),
+              child: TextField(
+                controller: controller_eventName,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Nombre del evento',
+                ),
               ),
             ),
             Container(
@@ -89,6 +101,7 @@ class _DatePickerState extends State<DatePicker> {
               ),
             ),
             Container(
+              padding: const EdgeInsets.only(left: 20, right: 20),
               margin: const EdgeInsets.only(top: 20),
               child: ElevatedButton(
                   onPressed: (){
