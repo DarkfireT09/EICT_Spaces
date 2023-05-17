@@ -42,6 +42,9 @@ class _DayCalendarState extends State<DayCalendar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Seleccione el día'),
+      ),
       body: Container(
         margin: const EdgeInsets.only(top: 20),
         child: SfCalendar(
