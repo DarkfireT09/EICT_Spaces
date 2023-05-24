@@ -43,6 +43,7 @@ class _DayCalendarState extends State<DayCalendar> {
   var db = FirebaseFirestore.instance;
   final CalendarController _calendarController = CalendarController();
   MeetingDataSource? events;
+  var userMeetings = <Meeting>[];
   // List<Meeting> events.appointments = <Meeting>[
   //   // add meeting at 2023 april 24 9:00 to 11:00
   //   Meeting('Meeting', DateTime(2023, 4, 25, 9), DateTime(2023, 4, 25, 11),
@@ -84,16 +85,45 @@ class _DayCalendarState extends State<DayCalendar> {
             ))
         .toList();
 
-    print(list);
+    var now = DateTime.now();
 
-    list.addAll([
-      Meeting('Not available', DateTime(2023, 4, 25, 0),
-          DateTime(2023, 4, 25, 7), Colors.black, false, true, '', by, id),
-      Meeting('Not available', DateTime(2023, 4, 25, 18),
-          DateTime(2023, 4, 25, 24), Colors.black, false, true, '', by, id)
-    ]);
+    list.addAll(
+        // Meetings all days from 0 to 7 all year
+        List.generate(365, (index) {
+      var date = DateTime(now.year, now.month, now.day);
+      date = date.add(Duration(days: index));
+      return Meeting(
+        "Not available",
+        DateTime(date.year, date.month, date.day, 0),
+        DateTime(date.year, date.month, date.day, 7),
+        const Color(0x00000000),
+        false,
+        true,
+        "",
+        {},
+        "",
+      );
+    }));
+    list.addAll(
+      // Meetings all days from 7 to 24 all year
+      List.generate(365, (index) {
+        var date = DateTime(now.year, now.month, now.day);
+        date = date.add(Duration(days: index));
+        return Meeting(
+          "Not available",
+          DateTime(date.year, date.month, date.day, 18),
+          DateTime(date.year, date.month, date.day, 24),
+          const Color(0x00000000),
+          false,
+          true,
+          "",
+          {},
+          "",
+        );
+      }),
+    );
     setState(() {
-      events = MeetingDataSource(list);
+      events = MeetingDataSource(list+userMeetings);
     });
   }
 
@@ -140,8 +170,10 @@ class _DayCalendarState extends State<DayCalendar> {
                                 child: const Text('Delete'),
                                 onPressed: () {
                                   setState(() {
+                                    print("----length: ${events?.appointments?.length}");
                                     events?.appointments
                                         ?.remove(details.appointments![0]);
+                                    print("----length: ${events?.appointments?.length}");
                                   });
                                   Navigator.pop(context);
                                 },
@@ -172,14 +204,9 @@ class _DayCalendarState extends State<DayCalendar> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // remove all not confirmed events.appointments
-          count = 0;
-          setState(() {
-            events?.appointments
-                ?.removeWhere((element) => !element.isConfirmed); // TODO update
-          });
+          addMeetings(userMeetings);
         },
-        child: const Icon(Icons.delete),
+        child: const Icon(Icons.navigate_next_rounded),
       ),
     );
   }
@@ -261,15 +288,14 @@ class _DayCalendarState extends State<DayCalendar> {
           details.date!.day, result.endTime.hour, result.endTime.minute);
       count++;
 
-      var newMeeting = Meeting(
-          "Meeting $count", start, end, Colors.green, false, false, reason, by, id);
-      addMeeting(newMeeting);
-
+      var newMeeting = Meeting("Meeting $count", start, end, Colors.green,
+          false, false, reason, by, id);
+      // addMeeting(newMeeting);
+      userMeetings.add(newMeeting);
       setState(() {
         getDataFromFireStore();
       });
     }
-
   }
 
   // function that gets the nearest meeting before and after to the given date and return both
@@ -309,16 +335,19 @@ class _DayCalendarState extends State<DayCalendar> {
 
   void removeMeeting() {}
 
-  void addMeeting(meeting) {
-    db.collection("bookings").add({
-      "by": meeting.by,
-      "name": meeting.eventName,
-      "from": meeting.from,
-      "to": meeting.to,
-      "approved": meeting.isConfirmed,
-      "reason": meeting.reason,
-      "space_id": meeting.space_id
-    });
+  void addMeetings(requestedMeetings) {
+    for (var i = 0; i < requestedMeetings.length; i++) {
+      var meeting = requestedMeetings[i];
+      db.collection("bookings").add({
+        "by": meeting.by,
+        "name": meeting.eventName,
+        "from": meeting.from,
+        "to": meeting.to,
+        "approved": meeting.isConfirmed,
+        "reason": meeting.reason,
+        "space_id": meeting.space_id
+      });
+    }
   }
 }
 
