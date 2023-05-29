@@ -119,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.max,
                                   children: [
                                     ClipRRect(
                                       //width: double.infinity,
@@ -130,7 +131,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                     ),
                                     Container(
-                                      margin: const EdgeInsets.only(top: 16),
+                                      margin: const EdgeInsets.only(top: 8, bottom: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -141,6 +144,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleLarge,
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                           Text(
                                             '${spaces?[index]['campus']} - ${spaces?[index]['location']}' ??
@@ -148,6 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
+                                            textAlign: TextAlign.center
                                           ),
                                           Row(
                                               mainAxisAlignment:
@@ -159,6 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .bodyMedium,
+                                                  textAlign: TextAlign.center
                                                 ),
                                                 const SizedBox(
                                                   width: 24,),
@@ -168,6 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .bodyMedium,
+                                                  textAlign: TextAlign.center
                                                 ),
                                               ]),
 
@@ -183,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   return Center(
                     child: Text(
                       'Error: ${snapshot.error}',
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   );
                 } else {

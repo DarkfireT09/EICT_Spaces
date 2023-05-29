@@ -16,7 +16,14 @@ class LoginForm extends StatelessWidget {
             children: [
           Image.network('https://picsum.photos/300/100'),
           const SizedBox(height: 64.0),
-          const Text('Bienvenido a EICT Spaces, por favor inicie sesión'),
+          const Text(
+              'Bienvenido a EICT Spaces',
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+          ),
+          const Text(
+              'Por favor inicie sesión para continuar',
+          ),
           const SizedBox(height: 8.0),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
