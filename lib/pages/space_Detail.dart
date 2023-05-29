@@ -52,7 +52,7 @@ class _SpaceDetailState extends State<SpaceDetail> {
                           child: Column(
                             children: [
                               Text(
-                                (space?['name'] ?? 'No name') + " - "+ space?['category'] ?? 'No category',
+                                (space?['name'] ?? 'No name') + ' ' + (space?['campus'] ?? 'No campus'),
                                 style: TextStyle(
                                   fontSize: 24.0,
                                   fontWeight: FontWeight.bold,
@@ -60,7 +60,7 @@ class _SpaceDetailState extends State<SpaceDetail> {
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                'Depencencia',
+                                space?['dependency'] ?? 'No dependency',
                                 style: TextStyle(
                                   fontSize: 20.0,
                                 ),
