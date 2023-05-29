@@ -86,7 +86,7 @@ class _DatePickerState extends State<DatePicker> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Correo electrónico',
-                  errorText: validateEmail ? 'El correo electrónico no puede estar vacío' : null,
+                  errorText: validateEmail ? 'El correo electrónico no es valido' : null,
                 ),
               ),
             ),
@@ -99,7 +99,7 @@ class _DatePickerState extends State<DatePicker> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Número de teléfono',
-                  errorText: validatePhone ? 'El número de teléfono no puede estar vacío' : null,
+                  errorText: validatePhone ? 'El número de teléfono no es valido' : null,
                 ),
               ),
             ),
@@ -123,12 +123,33 @@ class _DatePickerState extends State<DatePicker> {
                     setState(() {
                       controller_eventName.text.isEmpty ? validateEventName = true : validateEventName = false;
                       controller_name.text.isEmpty ? validateName = true : validateName = false;
-                      controller_email.text.isEmpty ? validateEmail = true : validateEmail = false;
-                      controller_phone.text.isEmpty ? validatePhone = true : validatePhone = false;
+                      //controller_email.text.isEmpty ? validateEmail = true : validateEmail = false;
+                      //controller_phone.text.isEmpty ? validatePhone = true : validatePhone = false;
                       controller_description.text.isEmpty ? validateDescription = true : validateDescription = false;
                     });
 
-                    if(controller_eventName.text.isEmpty || controller_name.text.isEmpty || controller_email.text.isEmpty || controller_phone.text.isEmpty || controller_description.text.isEmpty){
+                    if(!controller_email.text.contains('@') || !controller_email.text.contains('.')){
+                      setState(() {
+                        validateEmail = true;
+                      });
+                    } else {
+                      setState(() {
+                        validateEmail = false;
+                      });
+                    }
+
+
+                    if(!controller_phone.text.isNumericOnly){
+                      setState(() {
+                        validatePhone = true;
+                      });
+                    } else {
+                      setState(() {
+                        validatePhone = false;
+                      });
+                    }
+
+                    if(validateEventName || validateName || validateEmail || validatePhone || validateDescription){
                       return;
                     }
                     controller.setUser(controller_name.text);
@@ -136,6 +157,7 @@ class _DatePickerState extends State<DatePicker> {
                     controller.setPhone(controller_phone.text);
                     controller.setCurrentEventName(controller_eventName.text);
                     controller.setCurrentDescription(controller_description.text);
+                    
 
                     Navigator.push(
                       context,
