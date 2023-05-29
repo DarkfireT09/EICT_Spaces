@@ -8,7 +8,7 @@ class DateController extends GetxController {
   var currentEventName = ''.obs;
   var currentDescription = ''.obs;
 
-  var space_id = "TkrYtpWGQqNxeGHFaPDs".obs; // TODO: obtain from space selection
+  var space_id = "".obs; // TODO: obtain from space selection
 
   // getters and setters
   void setUser(String value) => user.value = value;
