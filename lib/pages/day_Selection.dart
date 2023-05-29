@@ -2,10 +2,12 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:get/get.dart';
 //import "package:flutter_speed_dial/flutter_speed_dial.dart";
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:time_range_picker/time_range_picker.dart';
-import 'package:intl/intl.dart';
+
+import '../utils/DateController.dart';
 
 /// The app which hosts the home page which contains the calendar on it.
 class CalendarApp extends StatelessWidget {
@@ -14,7 +16,7 @@ class CalendarApp extends StatelessWidget {
     return MaterialApp(
         title: 'Calendar Demo',
         theme: ThemeData(useMaterial3: true),
-        home: DayCalendar());
+        home: const DayCalendar());
   }
 }
 
@@ -29,33 +31,24 @@ class DayCalendar extends StatefulWidget {
 }
 
 class _DayCalendarState extends State<DayCalendar> {
+  final DateController controller = Get.put(DateController());
+
   var count = 0;
   // TODO: Controller variables
-  var id = "TkrYtpWGQqNxeGHFaPDs";
-  var name = "New Request";
-  var reason = "lorem ipsum";
-  var by = {
-    "email": "a@a.com",
-    "name": "user",
-    "phone": "1234567890",
-  };
+  // var id = getSpaceId();
+  // var name = "New Request";
+  // var reason = "lorem ipsum";
+  // var by = {
+  //   "email": "a@a.com",
+  //   "name": "user",
+  //   "phone": "1234567890",
+  // };
+
 
   var db = FirebaseFirestore.instance;
   final CalendarController _calendarController = CalendarController();
   MeetingDataSource? events;
   var userMeetings = <Meeting>[];
-  // List<Meeting> events.appointments = <Meeting>[
-  //   // add meeting at 2023 april 24 9:00 to 11:00
-  //   Meeting('Meeting', DateTime(2023, 4, 25, 9), DateTime(2023, 4, 25, 11),
-  //       Colors.green, false, true),
-  //   Meeting('Meeting', DateTime(2023, 4, 25, 15), DateTime(2023, 4, 25, 17),
-  //       Colors.green, false, true),
-  //   Meeting("Not available", DateTime(2023, 4, 25, 0), DateTime(2023, 4, 25, 7),
-  //       const Color(0x00000000), false, true),
-  //   Meeting("Not available", DateTime(2023, 4, 25, 18),
-  //       DateTime(2023, 4, 25, 24), const Color(0x00000000), false, true),
-  // ];
-
   @override
   void initState() {
     // _initializeEventColor();
@@ -68,6 +61,7 @@ class _DayCalendarState extends State<DayCalendar> {
   }
 
   Future<void> getDataFromFireStore() async {
+    var id = controller.getSpaceId();
     var snapShotsValue =
         await db.collection("bookings").where("space_id", isEqualTo: id).get();
 
@@ -129,6 +123,7 @@ class _DayCalendarState extends State<DayCalendar> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Seleccione el día'),
@@ -170,10 +165,10 @@ class _DayCalendarState extends State<DayCalendar> {
                                 child: const Text('Delete'),
                                 onPressed: () {
                                   setState(() {
-                                    print("----length: ${events?.appointments?.length}");
-                                    events?.appointments
-                                        ?.remove(details.appointments![0]);
-                                    print("----length: ${events?.appointments?.length}");
+                                    // print(userMeetings.length);
+                                    userMeetings.remove(appointmentDetails);
+                                    getDataFromFireStore();
+                                    // print(userMeetings.length);
                                   });
                                   Navigator.pop(context);
                                 },
@@ -188,6 +183,15 @@ class _DayCalendarState extends State<DayCalendar> {
           onTap: (CalendarTapDetails details) {
             if (_calendarController.view == CalendarView.month &&
                 details.targetElement == CalendarElement.calendarCell) {
+              // if selected day before today
+              if (details.date!.isBefore(DateTime.now())) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('No puede seleccionar un día anterior'),
+                  ),
+                );
+                return;
+              }
               _calendarController.view = CalendarView.day;
               _calendarController.displayDate = details.date!;
             } else if (_calendarController.view == CalendarView.day) {
@@ -205,6 +209,10 @@ class _DayCalendarState extends State<DayCalendar> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           addMeetings(userMeetings);
+          // return to home
+          Navigator.pop(context); // close the drawer
+          Navigator.pop(context); // close the calendar
+          Navigator.pop(context); // close the space
         },
         child: const Icon(Icons.navigate_next_rounded),
       ),
@@ -212,11 +220,21 @@ class _DayCalendarState extends State<DayCalendar> {
   }
 
   void _dayTapUserHandler(details) async {
+    var id = controller.getSpaceId();
+    var name = controller.getCurrentEventName();
+    var reason = controller.getCurrentDescription();
+    var by = controller.getCurrentBy();
+    // if (userMeetings.isNotEmpty){
+    //   print("From: -${userMeetings[0].from}");
+    //   print("To: -${userMeetings[0].to}");
+    // }
+
     List<Meeting> interval = getNearestMeetings(details.date!);
     bool changeCheck = false;
     Meeting? currentMeeting;
     if (details.targetElement == CalendarElement.appointment) {
-      currentMeeting = details.appointments![0];
+      currentMeeting = userMeetings.firstWhere(
+          (element) => element.from == details.appointments![0].from);
       print(currentMeeting!.from);
       if (!details.appointments![0].isConfirmed) {
         // interval = [currentMeeting, currentMeeting];
@@ -268,7 +286,7 @@ class _DayCalendarState extends State<DayCalendar> {
         }).toList(),
       );
       if (result == null) return;
-      print(result);
+      // print(result);
       if (changeCheck) {
         setState(() {
           currentMeeting?.from = DateTime(
@@ -279,6 +297,7 @@ class _DayCalendarState extends State<DayCalendar> {
               result.startTime.minute);
           currentMeeting?.to = DateTime(details.date!.year, details.date!.month,
               details.date!.day, result.endTime.hour, result.endTime.minute);
+          getDataFromFireStore();
         });
         return;
       }
@@ -288,7 +307,7 @@ class _DayCalendarState extends State<DayCalendar> {
           details.date!.day, result.endTime.hour, result.endTime.minute);
       count++;
 
-      var newMeeting = Meeting("Meeting $count", start, end, Colors.green,
+      var newMeeting = Meeting(name, start, end, Colors.lightBlue,
           false, false, reason, by, id);
       // addMeeting(newMeeting);
       userMeetings.add(newMeeting);
@@ -332,8 +351,6 @@ class _DayCalendarState extends State<DayCalendar> {
   List? _getDataSource() {
     return events?.appointments;
   }
-
-  void removeMeeting() {}
 
   void addMeetings(requestedMeetings) {
     for (var i = 0; i < requestedMeetings.length; i++) {

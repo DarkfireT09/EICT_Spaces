@@ -1,5 +1,7 @@
+import 'package:eict_scheduling_test1/utils/DateController.dart';
 import 'package:flutter/material.dart';
-
+import 'package:get/get.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'day_Selection.dart';
 
 class DatePicker extends StatefulWidget {
@@ -14,6 +16,7 @@ class DatePicker extends StatefulWidget {
 class _DatePickerState extends State<DatePicker> {
   DateTime _selectedDate = DateTime.now();
 
+  final DateController controller = Get.put(DateController());
   TextEditingController controller_eventName = TextEditingController();
   TextEditingController controller_name = TextEditingController();
   TextEditingController controller_email = TextEditingController();
@@ -36,7 +39,7 @@ class _DatePickerState extends State<DatePicker> {
                 padding: const EdgeInsets.only(left: 20, right: 20),
                 margin: const EdgeInsets.only(bottom: 20),
                 child: const Text(
-                  'Porfavor diligencie los siguientes datos:',
+                  'Por favor, diligencie los siguientes datos:',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 30,
@@ -105,6 +108,12 @@ class _DatePickerState extends State<DatePicker> {
               margin: const EdgeInsets.only(top: 20),
               child: ElevatedButton(
                   onPressed: (){
+                    controller.setUser(controller_name.text);
+                    controller.setEmail(controller_email.text);
+                    controller.setPhone(controller_phone.text);
+                    controller.setCurrentEventName(controller_eventName.text);
+                    controller.setCurrentDescription(controller_description.text);
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => DayCalendar()),
