@@ -18,10 +18,15 @@ class _DatePickerState extends State<DatePicker> {
 
   final DateController controller = Get.put(DateController());
   TextEditingController controller_eventName = TextEditingController();
+  bool validateEventName = false;
   TextEditingController controller_name = TextEditingController();
+  bool validateName = false;
   TextEditingController controller_email = TextEditingController();
+  bool validateEmail = false;
   TextEditingController controller_phone = TextEditingController();
+  bool validatePhone = false;
   TextEditingController controller_description = TextEditingController();
+  bool validateDescription = false;
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +58,10 @@ class _DatePickerState extends State<DatePicker> {
               margin: const EdgeInsets.only(bottom: 20),
               child: TextField(
                 controller: controller_eventName,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Nombre del evento',
+                  errorText: validateEventName ? 'El nombre del evento no puede estar vacío' : null,
                 ),
               ),
             ),
@@ -64,9 +70,10 @@ class _DatePickerState extends State<DatePicker> {
               margin: const EdgeInsets.only(bottom: 20),
               child: TextField(
                 controller: controller_name,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Nombre completo',
+                  errorText: validateName ? 'El nombre no puede estar vacío' : null,
                 ),
               ),
             ),
@@ -75,9 +82,11 @@ class _DatePickerState extends State<DatePicker> {
               margin: const EdgeInsets.only(bottom: 20),
               child: TextField(
                 controller: controller_email,
-                decoration: const InputDecoration(
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Correo electrónico',
+                  errorText: validateEmail ? 'El correo electrónico no puede estar vacío' : null,
                 ),
               ),
             ),
@@ -86,9 +95,11 @@ class _DatePickerState extends State<DatePicker> {
               margin: const EdgeInsets.only(bottom: 20),
               child: TextField(
                 controller: controller_phone,
-                decoration: const InputDecoration(
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Número de teléfono',
+                  errorText: validatePhone ? 'El número de teléfono no puede estar vacío' : null,
                 ),
               ),
             ),
@@ -97,9 +108,10 @@ class _DatePickerState extends State<DatePicker> {
               margin: const EdgeInsets.only(bottom: 20),
               child: TextField(
                 controller: controller_description,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Descripción del uso que le piensa dar al espacio',
+                  errorText: validateDescription ? 'La descripción no puede estar vacía' : null,
                 ),
               ),
             ),
@@ -108,6 +120,17 @@ class _DatePickerState extends State<DatePicker> {
               margin: const EdgeInsets.only(top: 20),
               child: ElevatedButton(
                   onPressed: (){
+                    setState(() {
+                      controller_eventName.text.isEmpty ? validateEventName = true : validateEventName = false;
+                      controller_name.text.isEmpty ? validateName = true : validateName = false;
+                      controller_email.text.isEmpty ? validateEmail = true : validateEmail = false;
+                      controller_phone.text.isEmpty ? validatePhone = true : validatePhone = false;
+                      controller_description.text.isEmpty ? validateDescription = true : validateDescription = false;
+                    });
+
+                    if(controller_eventName.text.isEmpty || controller_name.text.isEmpty || controller_email.text.isEmpty || controller_phone.text.isEmpty || controller_description.text.isEmpty){
+                      return;
+                    }
                     controller.setUser(controller_name.text);
                     controller.setEmail(controller_email.text);
                     controller.setPhone(controller_phone.text);
