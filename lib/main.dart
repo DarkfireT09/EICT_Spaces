@@ -52,6 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size.aspectRatio);
+    var as = MediaQuery.of(context).size.aspectRatio;
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -85,9 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: GridView.builder(
                         itemCount: spaces?.length,
                         gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
+                        SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 2 / 3,
+                          childAspectRatio: (2/3)*(as > 0.7 ? 1 : as*1.5),
                         ),
                         itemBuilder: (context, index) {
                           return Card(
@@ -131,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                     ),
                                     Container(
-                                      margin: const EdgeInsets.only(top: 8, bottom: 8),
+                                      margin: const EdgeInsets.only(top: 16),
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 16),
                                       child: Column(
