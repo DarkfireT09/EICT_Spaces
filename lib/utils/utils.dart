@@ -31,7 +31,9 @@ Future<List> getSpaces() async {
 }
 
 Future<UserCredential?> signInWithMicrosoft() async {
-  final microsoftProvider = MicrosoftAuthProvider();
+  final microsoftProvider = MicrosoftAuthProvider().setCustomParameters({
+    'tenant': 'ae525757-89ba-4d30-a2f7-49796ef8c604',
+  });
   if (kIsWeb) {
     await FirebaseAuth.instance.signInWithPopup(microsoftProvider);
   } else {
