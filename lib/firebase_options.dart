@@ -66,6 +66,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '734438758739',
     projectId: 'eict-spaces',
     storageBucket: 'eict-spaces.appspot.com',
+    androidClientId: '734438758739-35avh7o70fbcf23mv2n2lmkf43d963cs.apps.googleusercontent.com',
     iosClientId: '734438758739-vti6l1hrdc8l1lob6ctsvgj0153olr2t.apps.googleusercontent.com',
     iosBundleId: 'com.example.eictSchedulingTest1',
   );
@@ -76,6 +77,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '734438758739',
     projectId: 'eict-spaces',
     storageBucket: 'eict-spaces.appspot.com',
+    androidClientId: '734438758739-35avh7o70fbcf23mv2n2lmkf43d963cs.apps.googleusercontent.com',
     iosClientId: '734438758739-vti6l1hrdc8l1lob6ctsvgj0153olr2t.apps.googleusercontent.com',
     iosBundleId: 'com.example.eictSchedulingTest1',
   );
