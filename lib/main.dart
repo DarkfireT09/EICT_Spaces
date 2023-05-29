@@ -6,6 +6,8 @@ import 'package:eict_scheduling_test1/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:get/get.dart';
+import 'package:eict_scheduling_test1/utils/DateController.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +43,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final DateController controller = Get.put(DateController());
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
@@ -105,6 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       Radius.circular(12)),
                                 ),
                                 onTap: () {
+                                  controller.setSpaceId(spaces?[index]['id']);
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(

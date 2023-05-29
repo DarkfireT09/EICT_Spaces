@@ -10,6 +10,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
+
+Future<Map> getSpace_fromId(String id) async {
+  var db = FirebaseFirestore.instance;
+  var space = await db.collection('spaces').doc(id).get();
+  return {
+    'id': space.id,
+    'name': space['name'],
+    'amount': space['amount'],
+    'area': space['area'],
+    'campus': space['campus'],
+    'categories': space['categories'],
+    'dependency': space['dependency'],
+    'equipment_amount': space['equipment_amount'],
+    'location': space['location'],
+    'services': space['services'],
+    'student_capacity': space['student_capacity'],
+  };
+}
+
 Future<List> getSpaces() async {
   var db = FirebaseFirestore.instance;
   var spacesCollection = db.collection('spaces');
