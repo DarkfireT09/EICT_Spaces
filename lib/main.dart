@@ -3,6 +3,7 @@ import 'package:eict_scheduling_test1/pages/login.dart';
 import 'package:eict_scheduling_test1/pages/space_Detail.dart';
 import 'package:eict_scheduling_test1/ui/widgets/dialogs/filter_dialog.dart';
 import 'package:eict_scheduling_test1/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -22,6 +23,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseAuth AuthInstance = FirebaseAuth.instance;
+    var user = AuthInstance.currentUser;
+
     return MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
@@ -29,7 +33,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.green)
         ),
-        home: const MyHomePage(title: 'EICT Spaces'));
+        home: user == null ? LoginForm() : MyHomePage(title: 'EICT Spaces'));
   }
 }
 
@@ -52,8 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         actions: [
           IconButton(
-            icon: const Icon(Icons.login),
-            onPressed: () {
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -61,10 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {},
           ),
         ],
         title: Text(widget.title),
