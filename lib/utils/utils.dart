@@ -7,6 +7,8 @@
 }*/
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 Future<List> getSpaces() async {
   var db = FirebaseFirestore.instance;
@@ -26,4 +28,13 @@ Future<List> getSpaces() async {
     'services': e['services'],
     'student_capacity': e['student_capacity'],
   })).toList();
+}
+
+Future<UserCredential?> signInWithMicrosoft() async {
+  final microsoftProvider = MicrosoftAuthProvider();
+  if (kIsWeb) {
+    await FirebaseAuth.instance.signInWithPopup(microsoftProvider);
+  } else {
+    await FirebaseAuth.instance.signInWithProvider(microsoftProvider);
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eict_scheduling_test1/pages/login.dart';
 import 'package:eict_scheduling_test1/pages/space_Detail.dart';
 import 'package:eict_scheduling_test1/ui/widgets/dialogs/filter_dialog.dart';
 import 'package:eict_scheduling_test1/utils/utils.dart';
@@ -47,6 +48,17 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          IconButton(
+            icon: const Icon(Icons.login),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginForm(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {},
