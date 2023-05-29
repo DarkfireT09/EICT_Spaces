@@ -20,8 +20,8 @@ class LoginForm extends StatelessWidget {
           const SizedBox(height: 8.0),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              foregroundColor: Color(0xFFB2372E),
-              surfaceTintColor: Color(0xFFB2372E),
+              foregroundColor: const Color(0xFFB2372E),
+              surfaceTintColor: const Color(0xFFB2372E),
             ),
             onPressed: () async {
               UserCredential? user = await signInWithMicrosoft();
