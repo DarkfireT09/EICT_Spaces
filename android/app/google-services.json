@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "734438758739-35avh7o70fbcf23mv2n2lmkf43d963cs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.eict_scheduling_test1",
+            "certificate_hash": "2d9faad396b9f556c1088162b129a43c8271c199"
+          }
+        },
+        {
           "client_id": "734438758739-ilepdu4uvn3023p8mrmhpdoq9c0ggnjb.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "734438758739-ilepdu4uvn3023p8mrmhpdoq9c0ggnjb.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "734438758739-vti6l1hrdc8l1lob6ctsvgj0153olr2t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.eictSchedulingTest1"
+              }
             }
           ]
         }
