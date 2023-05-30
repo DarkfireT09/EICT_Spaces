@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -67,7 +66,8 @@ class _DayCalendarState extends State<DayCalendar> {
     var spaces = await db.collection("spaces").get();
     var count = 0;
     for (var element in spaces.docs) {
-      spaces_colors[element.data()["name"].toString()] = colors[count % colors.length];
+      spaces_colors[element.data()["name"].toString()] =
+          colors[count % colors.length];
       count++;
     }
   }
@@ -78,22 +78,26 @@ class _DayCalendarState extends State<DayCalendar> {
     // for (var element in spaces.docs) {
     //   element.data()["name"] = colors[spaces.docs.indexOf(element)];
     // }
-    var snapShotsValue =
-    await db.collection("bookings").get();
-    var filteredAppointments = snapShotsValue.docs.where((element) => element.data()['by']["email"] == controller.getEmail());
+    var snapShotsValue = await db.collection("bookings").get();
+    var filteredAppointments = snapShotsValue.docs.where(
+        (element) => element.data()['by']["email"] == controller.getEmail());
 
     List<Meeting> list = filteredAppointments
         .map((e) => Meeting(
-      "${spaces.docs.where((element) => element.id == e.data()["space_id"]).first["name"].toString()} - ${e.data()['name']}",
-      e.data()['from'].toDate(),
-      e.data()['to'].toDate(),
-      spaces_colors[spaces.docs.where((element) => element.id == e.data()["space_id"]).first["name"].toString()],
-      false,
-      false,
-      e.data()['reason'],
-      e.data()['by'],
-      e.data()['space_id'],
-    ))
+              "${spaces.docs.where((element) => element.id == e.data()["space_id"]).first["name"].toString()} - ${e.data()['name']}",
+              e.data()['from'].toDate(),
+              e.data()['to'].toDate(),
+              spaces_colors[spaces.docs
+                  .where((element) => element.id == e.data()["space_id"])
+                  .first["name"]
+                  .toString()],
+              false,
+              e.data()["status"],
+              e.data()['reason'],
+              e.data()['by'],
+              e.data()['space_id'],
+              e.id,
+            ))
         .toList();
 
     setState(() {
@@ -103,7 +107,6 @@ class _DayCalendarState extends State<DayCalendar> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Seleccione el día'),
@@ -126,7 +129,7 @@ class _DayCalendarState extends State<DayCalendar> {
                   _calendarController.displayDate = date;
                 }
               }
-            } else if (_calendarController.view == CalendarView.day){
+            } else if (_calendarController.view == CalendarView.day) {
               if (details.targetElement == CalendarElement.appointment) {
                 final Meeting appointmentDetails = details.appointments!.first;
                 showDialog(
@@ -140,10 +143,8 @@ class _DayCalendarState extends State<DayCalendar> {
                           children: <Widget>[
                             Text(
                                 'Desde: ${appointmentDetails.from.toString()}'),
-                            Text(
-                                'Hasta: ${appointmentDetails.to.toString()}'),
-                            Text(
-                                'Descripción: ${appointmentDetails.reason}'),
+                            Text('Hasta: ${appointmentDetails.to.toString()}'),
+                            Text('Descripción: ${appointmentDetails.reason}'),
                           ],
                         ),
                         actions: <Widget>[
@@ -152,6 +153,17 @@ class _DayCalendarState extends State<DayCalendar> {
                               Navigator.pop(context);
                             },
                             child: const Text('OK'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              controller.deleteBooking(
+                                  details.appointments![0].bookingId!);
+                              Navigator.pop(context);
+                              getDataFromFireStore();
+                              setState(() {
+                              });
+                            },
+                            child: const Text("Eliminar"),
                           )
                         ],
                       );
@@ -163,7 +175,6 @@ class _DayCalendarState extends State<DayCalendar> {
       ),
     );
   }
-
 }
 
 /// An object to set the appointment collection data source to calendar, which
@@ -217,7 +228,7 @@ class MeetingDataSource extends CalendarDataSource {
 class Meeting {
   /// Creates a meeting class with required details.
   Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay,
-      this.isConfirmed, this.reason, this.by, this.space_id);
+      this.status, this.reason, this.by, this.spaceId, [this.bookingId = ""]);
 
   /// Event name which is equivalent to subject property of [Appointment].
   String eventName;
@@ -234,11 +245,13 @@ class Meeting {
   /// IsAllDay which is equivalent to isAllDay property of [Appointment].
   bool isAllDay;
 
-  bool isConfirmed = false;
+  String status;
 
   String reason;
 
   Map by;
 
-  String space_id;
+  String spaceId;
+
+  String bookingId;
 }

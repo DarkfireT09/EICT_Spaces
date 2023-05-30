@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DateController extends GetxController {
   var user = ''.obs;
@@ -9,6 +10,8 @@ class DateController extends GetxController {
   var currentDescription = ''.obs;
 
   var space_id = "".obs; // TODO: obtain from space selection
+
+  var db = FirebaseFirestore.instance;
 
   // getters and setters
   void setUser(String value) => user.value = value;
@@ -36,4 +39,9 @@ class DateController extends GetxController {
       'phone': phone.value,
     };
   }
+
+  void deleteBooking(id) async {
+    await db.collection('bookings').doc(id).delete();
+  }
+
 }

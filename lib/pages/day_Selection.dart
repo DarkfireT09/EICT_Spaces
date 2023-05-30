@@ -62,20 +62,21 @@ class _DayCalendarState extends State<DayCalendar> {
 
   Future<void> getDataFromFireStore() async {
     var id = controller.getSpaceId();
-    var snapShotsValue =
-        await db.collection("bookings").where("space_id", isEqualTo: id).get();
+    var spaceBookings =
+        await db.collection("bookings").where("space_id", isEqualTo: id).where(Filter.or(Filter("by.email", isEqualTo: controller.getEmail()), Filter("status", isEqualTo: "APPROVED"))).get();
 
-    List<Meeting> list = snapShotsValue.docs
+    List<Meeting> list = spaceBookings.docs
         .map((e) => Meeting(
               e.data()['name'],
               e.data()['from'].toDate(),
               e.data()['to'].toDate(),
-              Colors.green,
+              Colors.blue,
               false,
-              false,
+              e.data()['status'],
               e.data()['reason'],
               e.data()['by'],
               e.data()['space_id'],
+              e.id,
             ))
         .toList();
 
@@ -92,7 +93,7 @@ class _DayCalendarState extends State<DayCalendar> {
         DateTime(date.year, date.month, date.day, 7),
         const Color(0x00000000),
         false,
-        true,
+        "APPROVED",
         "",
         {},
         "",
@@ -109,7 +110,7 @@ class _DayCalendarState extends State<DayCalendar> {
           DateTime(date.year, date.month, date.day, 24),
           const Color(0x00000000),
           false,
-          true,
+          "APPROVED",
           "",
           {},
           "",
@@ -160,14 +161,19 @@ class _DayCalendarState extends State<DayCalendar> {
                             Navigator.pop(context);
                           },
                         ),
-                        !details.appointments![0].isConfirmed
+                        details.appointments![0].status == "NON SUBMITTED" || details.appointments![0].status == "PENDING"
                             ? TextButton(
-                                child: const Text('Delete'),
+                                child: const Text('Eliminar'),
                                 onPressed: () {
                                   setState(() {
                                     // print(userMeetings.length);
-                                    userMeetings.remove(appointmentDetails);
+                                    if (details.appointments![0].status == "NON SUBMITTED"){
+                                      userMeetings.remove(appointmentDetails);
+                                    } else if (details.appointments![0].status == "PENDING") {
+                                      controller.deleteBooking(details.appointments![0].bookingId!);
+                                    }
                                     getDataFromFireStore();
+
                                     // print(userMeetings.length);
                                   });
                                   Navigator.pop(context);
@@ -184,7 +190,7 @@ class _DayCalendarState extends State<DayCalendar> {
             if (_calendarController.view == CalendarView.month &&
                 details.targetElement == CalendarElement.calendarCell) {
               // if selected day before today
-              if (details.date!.isBefore(DateTime.now())) {
+              if (details.date!.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('No puede seleccionar un día anterior'),
@@ -220,6 +226,14 @@ class _DayCalendarState extends State<DayCalendar> {
   }
 
   void _dayTapUserHandler(details) async {
+    if (details.date!.isBefore(DateTime.now())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No puede seleccionar una fecha pasada.'),
+        ),
+      );
+      return;
+    }
     var id = controller.getSpaceId();
     var name = controller.getCurrentEventName();
     var reason = controller.getCurrentDescription();
@@ -230,13 +244,16 @@ class _DayCalendarState extends State<DayCalendar> {
     // }
 
     List<Meeting> interval = getNearestMeetings(details.date!);
+
+
+
     bool changeCheck = false;
     Meeting? currentMeeting;
     if (details.targetElement == CalendarElement.appointment) {
       currentMeeting = userMeetings.firstWhere(
           (element) => element.from == details.appointments![0].from);
       print(currentMeeting!.from);
-      if (!details.appointments![0].isConfirmed) {
+      if (details.appointments![0].status == "NON SUBMITTED") {
         // interval = [currentMeeting, currentMeeting];
         changeCheck = true;
       }
@@ -261,7 +278,7 @@ class _DayCalendarState extends State<DayCalendar> {
           startTime: TimeOfDay(
               hour: interval[1].from.hour, minute: interval[1].from.minute),
           endTime: TimeOfDay(
-              hour: interval[0].to.hour, minute: interval[0].to.minute),
+              hour: details.date!.day == DateTime.now().day ? DateTime.now().hour+1 : interval[0].to.hour, minute: interval[0].to.minute),
 
           // startTime:  TimeOfDay(hour: 15, minute: 0),
           // endTime: TimeOfDay(hour: 11, minute: 0),
@@ -307,8 +324,8 @@ class _DayCalendarState extends State<DayCalendar> {
           details.date!.day, result.endTime.hour, result.endTime.minute);
       count++;
 
-      var newMeeting = Meeting(name, start, end, Colors.lightBlue,
-          false, false, reason, by, id);
+      var newMeeting = Meeting(name, start, end, Colors.blueGrey,
+          false, "NON SUBMITTED", reason, by, id);
       // addMeeting(newMeeting);
       userMeetings.add(newMeeting);
       setState(() {
@@ -335,23 +352,6 @@ class _DayCalendarState extends State<DayCalendar> {
     return [before, after];
   }
 
-  // bool isCollide(DateTime start, DateTime end) {
-  //   var len = events?.appointments?.length;
-  //   for (var i = 0; i < len!; i++) {
-  //     if (start.isAfter(events.appointments[i].from) && start.isBefore(events.appointments[i].to)) {
-  //       return true;
-  //     }
-  //     if (end.isAfter(events.appointments[i].from) && end.isBefore(events.appointments[i].to)) {
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // }
-
-  List? _getDataSource() {
-    return events?.appointments;
-  }
-
   void addMeetings(requestedMeetings) {
     for (var i = 0; i < requestedMeetings.length; i++) {
       var meeting = requestedMeetings[i];
@@ -360,9 +360,9 @@ class _DayCalendarState extends State<DayCalendar> {
         "name": meeting.eventName,
         "from": meeting.from,
         "to": meeting.to,
-        "approved": meeting.isConfirmed,
+        "status": "PENDING",
         "reason": meeting.reason,
-        "space_id": meeting.space_id
+        "space_id": meeting.spaceId
       });
     }
   }
@@ -419,7 +419,7 @@ class MeetingDataSource extends CalendarDataSource {
 class Meeting {
   /// Creates a meeting class with required details.
   Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay,
-      this.isConfirmed, this.reason, this.by, this.space_id);
+      this.status, this.reason, this.by, this.spaceId, [this.bookingId = ""]);
 
   /// Event name which is equivalent to subject property of [Appointment].
   String eventName;
@@ -436,11 +436,13 @@ class Meeting {
   /// IsAllDay which is equivalent to isAllDay property of [Appointment].
   bool isAllDay;
 
-  bool isConfirmed = false;
+  String status;
 
   String reason;
 
   Map by;
 
-  String space_id;
+  String spaceId;
+
+  String bookingId;
 }

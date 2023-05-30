@@ -14,7 +14,7 @@ class LoginForm extends StatelessWidget {
         child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
             children: [
-          Image.network('https://picsum.photos/300/100'),
+          Image.network('https://urosario.edu.co/sites/default/files/2023-03/escudo-urosario.jpeg'),
           const SizedBox(height: 64.0),
           const Text(
               'Bienvenido a EICT Spaces',
@@ -23,6 +23,7 @@ class LoginForm extends StatelessWidget {
           ),
           const Text(
               'Por favor inicie sesión para continuar',
+              style: TextStyle(fontSize: 16.0),
           ),
           const SizedBox(height: 8.0),
           ElevatedButton(
