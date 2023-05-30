@@ -29,6 +29,13 @@ class _DatePickerState extends State<DatePicker> {
   bool validateDescription = false;
 
   @override
+  void initState() {
+    super.initState();
+    controller_name.text = controller.getUser();
+    controller_email.text = controller.getEmail();
+    controller_phone.text = controller.getPhone();
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

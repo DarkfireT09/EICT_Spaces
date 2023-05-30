@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eict_scheduling_test1/pages/CurrentApointments.dart';
 import 'package:eict_scheduling_test1/pages/login.dart';
 import 'package:eict_scheduling_test1/pages/space_Detail.dart';
 import 'package:eict_scheduling_test1/ui/widgets/dialogs/filter_dialog.dart';
@@ -24,7 +25,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FirebaseAuth AuthInstance = FirebaseAuth.instance;
+    final DateController controller = Get.put(DateController());
     var user = AuthInstance.currentUser;
+
+    if (user != null) {
+      controller.setUser(user.displayName ?? '');
+      controller.setEmail(user.email ?? '');
+      controller.setPhone(user.phoneNumber ?? '');
+    }
 
     return MaterialApp(
         title: 'Flutter Demo',
@@ -210,15 +218,19 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             },
           )),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => getFilterDialog(context)
-        ),
-        tooltip: 'Filtrar',
-        icon: const Icon(Icons.tune),
-        label: Text('Filtrar'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>  CurrentApointments(),
+            ),
+          );
+        },
+        tooltip: 'Solicitudes actuales',
+        child: const Icon(Icons.calendar_today),
       ),
     );
+
   }
 }
