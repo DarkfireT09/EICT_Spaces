@@ -49,8 +49,8 @@ class _SpaceDetailState extends State<SpaceDetail> {
                         Expanded(
                           // This is the image
                           flex: 1,
-                          child: SizedBox(
-                            width: double.infinity,
+                          child: Expanded(
+                            //width: double.infinity,
                             child: Image.network(
                               'https://picsum.photos/500',
                               fit: BoxFit.cover,
