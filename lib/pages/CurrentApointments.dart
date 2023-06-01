@@ -29,9 +29,7 @@ class AppointmentCalendar extends StatefulWidget {
 class _AppointmentCalendarState extends State<AppointmentCalendar> {
   final DateController controller = Get.put(DateController());
   final List colors = [
-    Colors.red,
     Colors.blue,
-    Colors.green,
     Colors.yellow,
     Colors.purple,
     Colors.orange,
@@ -89,7 +87,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
               "${spaces.docs.where((element) => element.id == e.data()["space_id"]).first["name"].toString()} - ${e.data()['name']}",
               e.data()['from'].toDate(),
               e.data()['to'].toDate(),
-              spaces_colors[spaces.docs
+              e.data()["status"] == "APPROVED" ? Colors.green : e.data()["status"] == "DENIED" ? Colors.red : spaces_colors[spaces.docs
                   .where((element) => element.id == e.data()["space_id"])
                   .first["name"]
                   .toString()],
