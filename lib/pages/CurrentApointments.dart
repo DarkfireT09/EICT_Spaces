@@ -3,28 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import '../main.dart';
 import '../utils/DateController.dart';
 
 class CurrentApointments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Calendar Demo',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(useMaterial3: true),
-        home: const DayCalendar());
+    // return MaterialApp(
+    //     title: 'Calendar Demo',
+    //     debugShowCheckedModeBanner: false,
+    //     theme: ThemeData(useMaterial3: true),
+    //     home: const AppointmentCalendar());
+    return AppointmentCalendar();
   }
 }
 
-class DayCalendar extends StatefulWidget {
-  const DayCalendar({Key? key}) : super(key: key);
+class AppointmentCalendar extends StatefulWidget {
+  const AppointmentCalendar({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _DayCalendarState createState() => _DayCalendarState();
+  _AppointmentCalendarState createState() => _AppointmentCalendarState();
 }
 
-class _DayCalendarState extends State<DayCalendar> {
+class _AppointmentCalendarState extends State<AppointmentCalendar> {
   final DateController controller = Get.put(DateController());
   final List colors = [
     Colors.red,
@@ -110,6 +112,19 @@ class _DayCalendarState extends State<DayCalendar> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Seleccione el día'),
+        // back button
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MyHomePage(title: 'EICT Spaces'),
+              ),
+                  (route) => false,
+            );
+          },
+        ),
       ),
       body: Container(
         margin: const EdgeInsets.only(top: 20),
@@ -123,11 +138,9 @@ class _DayCalendarState extends State<DayCalendar> {
               if (details.targetElement == CalendarElement.calendarCell) {
                 final DateTime date = details.date!;
                 final DateTime currentDate = DateTime.now();
-                if (date.month == currentDate.month &&
-                    date.day >= currentDate.day) {
-                  _calendarController.view = CalendarView.day;
-                  _calendarController.displayDate = date;
-                }
+
+                _calendarController.view = CalendarView.day;
+                _calendarController.displayDate = date;
               }
             } else if (_calendarController.view == CalendarView.day) {
               if (details.targetElement == CalendarElement.appointment) {

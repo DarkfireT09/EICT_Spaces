@@ -70,7 +70,7 @@ class _DayCalendarState extends State<DayCalendar> {
               e.data()['name'],
               e.data()['from'].toDate(),
               e.data()['to'].toDate(),
-              Colors.blue,
+              e.data()['status'] == "APPROVED" ? Colors.green : Colors.blue,
               false,
               e.data()['status'],
               e.data()['reason'],
