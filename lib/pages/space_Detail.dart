@@ -17,12 +17,14 @@ class _SpaceDetailState extends State<SpaceDetail> {
   final DateController controller = Get.put(DateController());
 
   String formatList(list) {
+    //print(list);
     var msg = '';
     if (list == null) return 'No data';
     if (list.length == 1) return list[0].toString();
     for (var item in list) {
       msg += item + ', ';
     }
+    print(msg);
     return msg;
   }
 
@@ -39,9 +41,9 @@ class _SpaceDetailState extends State<SpaceDetail> {
               if (snapshot.hasData) {
                 Map? space = snapshot.data;
                 return Center(
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: double.infinity,
+                  child: Expanded(
+                    //width: double.infinity,
+                    //height: double.infinity,
                     child: ListView(
                       children: [
                         Expanded(
@@ -69,51 +71,77 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                     fontSize: 24.0,
                                     fontWeight: FontWeight.bold,
                                   ),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Text(
-                                  space?['dependency'].toString() ??
-                                      'No dependency', // dependencia
-                                  style: const TextStyle(fontSize: 20.0),
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 12.0),
+                                Text(
+                                  space?['dependency'].toString() ??
+                                      'No dependency', // dependencia
+                                  style: const TextStyle(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8.0),
                                 Text(
                                   "Lugar: ${space?['location'].toString() ?? 'No location'}",
                                   style: const TextStyle(
                                     fontSize: 20.0,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
+                                const SizedBox(height: 8.0),
                                 Text(
                                   "Servicios: ${formatList(space?['services'])}",
                                   style: const TextStyle(
                                     fontSize: 20.0,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
-                                Text(
-                                  "Categoria: ${space?['category'].toString() ?? 'No category'}",
-                                  style: const TextStyle(
-                                    fontSize: 20.0,
-                                  ),
-                                ),
+                                const SizedBox(height: 8.0),
+                                formatList(space?['categories']) != ''? Column(
+                                  children: [
+                                    Text(
+                                      //"Categoria: ${space?['category'].toString() ?? 'No category'}",
+                                      "Categoria: ${formatList(space?['categories'])}",
+                                      style: const TextStyle(
+                                        fontSize: 20.0,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                  ],
+                                ) : const SizedBox(height: 0.0),
                                 Text(
                                   "Capacidad de estudiantes: ${space?['student_capacity'].toString() ?? 'No student capacity'}",
                                   style: const TextStyle(
                                     fontSize: 20.0,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
+                                const SizedBox(height: 8.0),
                                 Text(
-                                  "Cantidad de equipos: ${space?['equipment_quantity'].toString() ?? 'No equipment quantity'}",
+                                  //"Cantidad de equipos: ${space?['equipment_quantity'].toString() ?? 'No equipment quantity'}",
+                                  "Cantidad de equipos: ${space?['equipment_amount'] ?? 'Sin equipos'}",
                                   style: const TextStyle(
                                     fontSize: 20.0,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
-                                Text(
-                                  "Area: ${space?['area'] ?? 'No area'}",
-                                  style: const TextStyle(
-                                    fontSize: 20.0,
-                                  ),
-                                ),
+                                const SizedBox(height: 8.0),
+                                space?['area'] != '' ? Column(
+                                  children: [
+                                    Text(
+                                      "Area(m²): ${space?['area'] ?? 'No area'}",
+                                      style: const TextStyle(
+                                        fontSize: 20.0,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                  ],
+                                ): const SizedBox(height: 0.0),
                                 Container(
                                   // big button
                                   width: double.infinity,
