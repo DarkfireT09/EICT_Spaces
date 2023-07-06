@@ -14,7 +14,7 @@ class SpaceDetail extends StatefulWidget {
 
 class _SpaceDetailState extends State<SpaceDetail> {
   FirebaseFirestore db = FirebaseFirestore.instance;
-  final DateController controller = Get.put(DateController());
+  DateController controller = Get.find();
 
   String formatList(list) {
     //print(list);

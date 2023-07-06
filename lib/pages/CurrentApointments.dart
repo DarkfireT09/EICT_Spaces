@@ -28,6 +28,11 @@ class AppointmentCalendar extends StatefulWidget {
 
 class _AppointmentCalendarState extends State<AppointmentCalendar> {
   final DateController controller = Get.put(DateController());
+  final Map<String, String> showStatus = {
+    "DENIED": "DENEGADA",
+    "PENDING": "PENDIENTE",
+    "APPROVED": "APROBADA",
+  };
   final List colors = [
     Colors.blue,
     Colors.yellow,
@@ -109,7 +114,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Seleccione el día'),
+        title: const Text('Mis reservas'),
         // back button
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -152,6 +157,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
+                            Text('Estado: ${showStatus[appointmentDetails.status]}'),
                             Text(
                                 'Desde: ${appointmentDetails.from.toString()}'),
                             Text('Hasta: ${appointmentDetails.to.toString()}'),

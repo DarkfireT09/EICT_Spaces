@@ -10,8 +10,22 @@ class DateController extends GetxController {
   var currentDescription = ''.obs;
 
   var space_id = "".obs; // TODO: obtain from space selection
+  var test = 1.obs;
 
   var db = FirebaseFirestore.instance;
+
+  // filter
+  Map filter = {
+    'active': false,
+    'list': {
+      'categories':'',
+      'services':'',
+    },
+    'numeric':{
+      'student_capacity': -1,
+      'equipment_amount': -1
+    }
+  };
 
   // getters and setters
   void setUser(String value) => user.value = value;
@@ -23,6 +37,11 @@ class DateController extends GetxController {
 
   void setSpaceId(String value) => space_id.value = value;
 
+  void setFilter(Map value) {
+    print("setFilter: $value");
+    filter = value;
+  }
+
   String getUser() => user.value;
   String getEmail() => email.value;
   String getPhone() => phone.value;
@@ -31,6 +50,8 @@ class DateController extends GetxController {
   String getCurrentDescription() => currentDescription.value;
 
   String getSpaceId() => space_id.value;
+
+  Map getFilter() => filter;
 
   Map getCurrentBy(){
     return {

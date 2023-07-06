@@ -13,6 +13,7 @@ import 'package:eict_scheduling_test1/utils/DateController.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Get.lazyPut<DateController>(() => DateController());
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FirebaseAuth AuthInstance = FirebaseAuth.instance;
-    final DateController controller = Get.put(DateController());
+
     var user = AuthInstance.currentUser;
 
     if (user != null) {
@@ -60,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.aspectRatio);
+    // print(MediaQuery.of(context).size.aspectRatio);
     var as = MediaQuery.of(context).size.aspectRatio;
     return Scaffold(
       appBar: AppBar(
@@ -89,6 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
             future: getSpaces(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
+                // print("Filter (main): ${controller.getFilter()}");
+                // print("----------------------------------- ${controller.test.value}");
                 if (snapshot.hasData) {
                   List? spaces = snapshot.data?.toList();
                   return Center(
@@ -220,14 +223,15 @@ class _MyHomePageState extends State<MyHomePage> {
           )),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          // print("Filter (main-> fp): ${controller.getFilter()}");
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>  CurrentApointments(),
+              builder: (context) =>  getFilterDialog(context),
             ),
           );
         },
-        tooltip: 'Solicitudes actuales',
+        tooltip: 'Filtro',
         child: const Icon(Icons.calendar_today),
       ),
     );

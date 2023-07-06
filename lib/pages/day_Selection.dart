@@ -63,7 +63,7 @@ class _DayCalendarState extends State<DayCalendar> {
   Future<void> getDataFromFireStore() async {
     var id = controller.getSpaceId();
     var spaceBookings =
-        await db.collection("bookings").where("space_id", isEqualTo: id).where("status", isNotEqualTo: "DENIED").where(Filter.or(Filter("by.email", isEqualTo: controller.getEmail()), Filter("status", isEqualTo: "APPROVED"))).get();
+        await db.collection("bookings").where("space_id", isEqualTo: id).where(Filter.or(Filter("by.email", isEqualTo: controller.getEmail()), Filter("status", isEqualTo: "APPROVED"))).get();
 
     List<Meeting> list = spaceBookings.docs
         .map((e) => Meeting(
