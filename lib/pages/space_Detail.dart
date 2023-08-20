@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eict_scheduling_test1/pages/day_Selection.dart';
 import 'package:flutter/material.dart';
 import 'date_picker.dart';
 import 'package:get/get.dart';
@@ -138,7 +139,7 @@ class _SpaceDetailState extends State<SpaceDetail> {
                               child: ElevatedButton.icon(
                                 onPressed: () => showDialog<String>(
                                   context: context,
-                                  builder: (BuildContext context) => dayS,
+                                  builder: (BuildContext context) => DayCalendar(),
                                 ),
                                 icon: Icon(Icons.arrow_circle_right),
                                 label: const Text('Reservar', style: TextStyle(fontSize: 20.0)),
