@@ -56,8 +56,8 @@ Future<List> processFilter(collection) async {
 
   Map list = filter['list'];
   Map numeric = filter['numeric'];
-  list.removeWhere((key, value) => value == '');
-  numeric.removeWhere((key, value) => value == -1);
+  // list.removeWhere((key, value) => value == '');
+  // numeric.removeWhere((key, value) => value == -1);
   QuerySnapshot querySnapshot = await collection.get();
   List<QueryDocumentSnapshot> spaces = querySnapshot.docs;
 
