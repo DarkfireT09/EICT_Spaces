@@ -1,4 +1,5 @@
 import 'package:eict_scheduling_test1/utils/DateController.dart';
+import 'package:eict_scheduling_test1/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
@@ -126,8 +127,8 @@ class _DatePickerState extends State<DatePicker> {
               padding: const EdgeInsets.only(left: 20, right: 20),
               margin: const EdgeInsets.only(top: 20),
               child: ElevatedButton(
-                  onPressed: (){
-                    setState(() {
+                  onPressed: () async {
+                    setState(()  {
                       controller_eventName.text.isEmpty ? validateEventName = true : validateEventName = false;
                       controller_name.text.isEmpty ? validateName = true : validateName = false;
                       //controller_email.text.isEmpty ? validateEmail = true : validateEmail = false;
@@ -165,11 +166,22 @@ class _DatePickerState extends State<DatePicker> {
                     controller.setCurrentEventName(controller_eventName.text);
                     controller.setCurrentDescription(controller_description.text);
                     
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => DayCalendar()),
-                    );
+                    // controller.addMeetings();
+                    var spaceName = await controller.getSpaceNameFromId(controller.getSpaceId());
+                    showDialog(context: context, builder: (BuildContext context){
+                      return AlertDialog(
+                        title: const Text('Confirmación'),
+                        content: Text('Espacio: $spaceName'),
+                        actions: [
+                          TextButton(
+                            onPressed: (){
+                              print('Cancel');
+                            },
+                            child: const Text('Aceptar'),
+                          )
+                        ],
+                      );
+                    });
 
                   },
                   child: const Text('Continuar')

@@ -70,6 +70,12 @@ class DateController extends GetxController {
     };
   }
 
+  Future<String> getSpaceNameFromId(String id) async {
+    var db = FirebaseFirestore.instance;
+    var space = await db.collection('spaces').doc(id).get();
+    return space['name'];
+  }
+
   void deleteBooking(id) async {
     await db.collection('bookings').doc(id).delete();
   }
