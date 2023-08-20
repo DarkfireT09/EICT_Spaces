@@ -92,13 +92,8 @@ class _SpaceDetailState extends State<SpaceDetail> {
                             formatList(space?['categories']) != ''? Column(
                               children: [
                                 Text(
-<<<<<<< Updated upstream
                                   //"Categoria: ${space?['category'].toString() ?? 'No category'}",
                                   "Categoria: ${formatList(space?['categories'])}",
-=======
-                                  (space?['name'] ?? 'No name') +
-                                      '-' +
-                                      (space?['campus'] ?? 'No campus'),
                                   style: const TextStyle(
                                     fontSize: 24.0,
                                     fontWeight: FontWeight.bold,
@@ -149,7 +144,7 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                     : const SizedBox(height: 0.0),
                                 Text(
                                   "Capacidad de estudiantes: ${space?['student_capacity'].toString() ?? 'No student capacity'}",
->>>>>>> Stashed changes
+
                                   style: const TextStyle(
                                     fontSize: 20.0,
                                   ),
@@ -185,8 +180,6 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 8.0),
-<<<<<<< Updated upstream
-=======
                                 space?['area'] != ''
                                     ? Column(
                                         children: [
@@ -225,7 +218,7 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                           onPressed: () => showDialog<String>(
                                             context: context,
                                             builder: (BuildContext context) =>
-                                                DatePicker(),
+                                                DayCalendar(),
                                           ),
                                           child: const Text('Todo el espacio',
                                               style: TextStyle(fontSize: 20.0)),
@@ -241,30 +234,15 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                           onPressed: () => showDialog<String>(
                                             context: context,
                                             builder: (BuildContext context) =>
-                                                DatePicker(),
+                                                DayCalendar(),
                                           ),
                                           child: const Text('Para mi',
                                               style: TextStyle(fontSize: 20.0)),
                                         ),
                                       ),
                                     ])
->>>>>>> Stashed changes
                               ],
                             ): const SizedBox(height: 0.0),
-                            Container(
-                              // big button
-                              width: double.infinity,
-                              height: 50,
-                              margin: const EdgeInsets.only(top: 20.0),
-                              child: ElevatedButton.icon(
-                                onPressed: () => showDialog<String>(
-                                  context: context,
-                                  builder: (BuildContext context) => DayCalendar(),
-                                ),
-                                icon: Icon(Icons.arrow_circle_right),
-                                label: const Text('Reservar', style: TextStyle(fontSize: 20.0)),
-                              ),
-                            )
                           ],
                         ),
                       ),
