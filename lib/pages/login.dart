@@ -1,12 +1,21 @@
+import 'dart:ffi';
+
+import 'package:eict_scheduling_test1/ui/widgets/inputs/linked_label_checkbox.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../utils/utils.dart';
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
 
+  @override
+  State<LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  bool isSelected = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,12 +35,22 @@ class LoginForm extends StatelessWidget {
               style: TextStyle(fontSize: 16.0),
           ),
           const SizedBox(height: 8.0),
+              LinkedLabelCheckbox(
+                label: 'Acepta la política de tratamento de datos',
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                value: isSelected,
+                onChanged: (bool newValue) {
+                  setState(() {
+                    isSelected = newValue;
+                  });
+                },
+              ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               foregroundColor: const Color(0xFFB2372E),
               surfaceTintColor: const Color(0xFFB2372E),
             ),
-            onPressed: () async {
+            onPressed: isSelected ? () async {
               UserCredential? user = await signInWithMicrosoft();
               if (user != null) {
                 Navigator.pushAndRemoveUntil(
@@ -42,7 +61,7 @@ class LoginForm extends StatelessWidget {
                   (route) => false,
                 );
               }
-            },
+            } : null,
             child: const Text('Iniciar sesión con cuenta de URosario'),
           ),
         ])

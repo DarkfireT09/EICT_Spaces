@@ -139,7 +139,7 @@ class _SpaceDetailState extends State<SpaceDetail> {
                               child: ElevatedButton.icon(
                                 onPressed: () => showDialog<String>(
                                   context: context,
-                                  builder: (BuildContext context) => DayCalendar(),
+                                  builder: (BuildContext context) => const DayCalendar(),
                                 ),
                                 icon: Icon(Icons.arrow_circle_right),
                                 label: const Text('Reservar', style: TextStyle(fontSize: 20.0)),

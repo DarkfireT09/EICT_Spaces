@@ -111,11 +111,21 @@ Future<UserCredential?> signInWithMicrosoft() async {
   final microsoftProvider = MicrosoftAuthProvider().setCustomParameters({
     'tenant': 'ae525757-89ba-4d30-a2f7-49796ef8c604',
   });
-  var user;
+  final provider = OAuthProvider('microsoft.com');
+
+  provider.setCustomParameters({
+    'tenant': 'ae525757-89ba-4d30-a2f7-49796ef8c604',
+  });
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  UserCredential user;
   if (kIsWeb) {
-    user = await FirebaseAuth.instance.signInWithPopup(microsoftProvider);
+    user = await auth.signInWithPopup(microsoftProvider);
   } else {
-    user = await FirebaseAuth.instance.signInWithProvider(microsoftProvider);
+    print("SIGN IN WITH MICROSOFT");
+    user = await auth.signInWithProvider(provider);
+
   }
 
   print('LOGGED_USER: $user');
