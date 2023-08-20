@@ -8,6 +8,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 
 import '../utils/DateController.dart';
+import 'date_picker.dart';
 
 /// The app which hosts the home page which contains the calendar on it.
 class CalendarApp extends StatelessWidget {
@@ -214,11 +215,14 @@ class _DayCalendarState extends State<DayCalendar> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          addMeetings(userMeetings);
-          // return to home
-          Navigator.pop(context); // close the drawer
-          Navigator.pop(context); // close the calendar
-          Navigator.pop(context); // close the space
+          // addMeetings(userMeetings);
+          controller.setCurrentUserMeetings(userMeetings);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DatePicker(),
+            ),
+          );
         },
         child: const Icon(Icons.navigate_next_rounded),
       ),
@@ -235,7 +239,7 @@ class _DayCalendarState extends State<DayCalendar> {
       return;
     }
     var id = controller.getSpaceId();
-    var name = controller.getCurrentEventName();
+    // var name = controller.getCurrentEventName();
     var reason = controller.getCurrentDescription();
     var by = controller.getCurrentBy();
     // if (userMeetings.isNotEmpty){
@@ -324,10 +328,11 @@ class _DayCalendarState extends State<DayCalendar> {
           details.date!.day, result.endTime.hour, result.endTime.minute);
       count++;
 
-      var newMeeting = Meeting(name, start, end, Colors.blueGrey,
-          false, "NON SUBMITTED", reason, by, id);
+      var newMeeting = Meeting("${start.hour}:00 - ${end.hour}:00", start, end, Colors.blueGrey,
+          false, "NON SUBMITTED", "", {}, id);
       // addMeeting(newMeeting);
       userMeetings.add(newMeeting);
+
       setState(() {
         getDataFromFireStore();
       });

@@ -110,7 +110,7 @@ Widget getFilterDialog(context) {
                                   context,
                                   MaterialPageRoute(builder: (context) => MyApp()),
                                 );
-                                controller.test.value = 2;
+
                               }
                             },
                             child: const Text('Guardar Filtros')),

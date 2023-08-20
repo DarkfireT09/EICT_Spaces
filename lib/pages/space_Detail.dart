@@ -95,6 +95,57 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                   //"Categoria: ${space?['category'].toString() ?? 'No category'}",
                                   "Categoria: ${formatList(space?['categories'])}",
                                   style: const TextStyle(
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 12.0),
+                                Text(
+                                  space?['dependency'].toString() ??
+                                      'No dependency', // dependencia
+                                  style: const TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  "Lugar: ${space?['location'].toString() ?? 'No location'}",
+                                  style: const TextStyle(
+                                    fontSize: 20.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  "Servicios: ${formatList(space?['services'])}",
+                                  style: const TextStyle(
+                                    fontSize: 20.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8.0),
+                                formatList(space?['categories']) != ''
+                                    ? Column(
+                                        children: [
+                                          Text(
+                                            //"Categoria: ${space?['category'].toString() ?? 'No category'}",
+                                            "Categoria: ${formatList(space?['categories'])}",
+                                            style: const TextStyle(
+                                              fontSize: 20.0,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const SizedBox(height: 8.0),
+                                        ],
+                                      )
+                                    : const SizedBox(height: 0.0),
+                                Text(
+                                  "Capacidad de estudiantes: ${space?['student_capacity'].toString() ?? 'No student capacity'}",
+
+                                  style: const TextStyle(
                                     fontSize: 20.0,
                                   ),
                                   textAlign: TextAlign.center,
@@ -129,22 +180,83 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 8.0),
+                                space?['area'] != ''
+                                    ? Column(
+                                        children: [
+                                          Text(
+                                            "Area(m²): ${space?['area'] ?? 'No area'}",
+                                            style: const TextStyle(
+                                              fontSize: 20.0,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const SizedBox(height: 8.0),
+                                        ],
+                                      )
+                                    : const SizedBox(height: 0.0),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 10.0),
+                                  child: const Text(
+                                    "Reservar:",
+                                    style: TextStyle(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        // big button
+                                        width: (MediaQuery.of(context).size.width-72)/2,
+                                        height: 40,
+                                        margin: const EdgeInsets.only(
+                                            top: 10.0, right: 10.0,  left: 10.0),
+                                        child: ElevatedButton(
+                                          //onPressed: () => showDialog<String>(
+                                          //  context: context,
+                                          //  builder: (BuildContext context) =>
+                                          //      DayCalendar(),
+                                          //),
+                                          onPressed: (){
+                                            controller.setReserveType("event");
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => DayCalendar()),
+                                            );
+                                          },
+                                          child: const Text('Para evento',
+                                              style: TextStyle(fontSize: 20.0)),
+                                        ),
+                                      ),
+                                      Container(
+                                        // big button
+                                        width: (MediaQuery.of(context).size.width-72)/2,
+                                        height: 40,
+                                        margin: const EdgeInsets.only(
+                                            top: 10.0, right: 10.0, left: 10.0),
+                                        child: ElevatedButton(
+                                          //onPressed: () => showDialog<String>(
+                                          //  context: context,
+                                          //  builder: (BuildContext context) =>
+                                          //      DayCalendar(),
+                                          //),
+                                          onPressed: (){
+                                            controller.setReserveType("personal");
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => DayCalendar()),
+                                            );
+                                          },
+                                          child: const Text('Para mi',
+                                              style: TextStyle(fontSize: 20.0)),
+                                        ),
+                                      ),
+                                    ])
                               ],
                             ): const SizedBox(height: 0.0),
-                            Container(
-                              // big button
-                              width: double.infinity,
-                              height: 50,
-                              margin: const EdgeInsets.only(top: 20.0),
-                              child: ElevatedButton.icon(
-                                onPressed: () => showDialog<String>(
-                                  context: context,
-                                  builder: (BuildContext context) => const DayCalendar(),
-                                ),
-                                icon: Icon(Icons.arrow_circle_right),
-                                label: const Text('Reservar', style: TextStyle(fontSize: 20.0)),
-                              ),
-                            )
                           ],
                         ),
                       ),
@@ -161,7 +273,6 @@ class _SpaceDetailState extends State<SpaceDetail> {
               child: CircularProgressIndicator(),
             );
           }),
-
     );
   }
 }
