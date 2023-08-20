@@ -168,14 +168,26 @@ class _DatePickerState extends State<DatePicker> {
                     
                     // controller.addMeetings();
                     var spaceName = await controller.getSpaceNameFromId(controller.getSpaceId());
+                    var hours = List.generate(controller.currentUserMeetings.length, (index) {
+                      return Text("Fecha: ${controller.currentUserMeetings[index].from.day}/${controller.currentUserMeetings[index].from.month} Desde: ${controller.currentUserMeetings[index].from.hour}:00 - Fin: ${controller.currentUserMeetings[index].to.hour}:00");
+                    });
                     showDialog(context: context, builder: (BuildContext context){
                       return AlertDialog(
                         title: const Text('Confirmación'),
-                        content: Text('Espacio: $spaceName'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text("Espacio: $spaceName"),
+                          ]+hours,
+                        ),
                         actions: [
                           TextButton(
                             onPressed: (){
-                              print('Cancel');
+                              // go to home
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
                             },
                             child: const Text('Aceptar'),
                           )
