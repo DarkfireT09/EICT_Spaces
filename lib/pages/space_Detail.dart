@@ -215,11 +215,18 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                         margin: const EdgeInsets.only(
                                             top: 10.0, right: 10.0,  left: 10.0),
                                         child: ElevatedButton(
-                                          onPressed: () => showDialog<String>(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                DayCalendar(),
-                                          ),
+                                          //onPressed: () => showDialog<String>(
+                                          //  context: context,
+                                          //  builder: (BuildContext context) =>
+                                          //      DayCalendar(),
+                                          //),
+                                          onPressed: (){
+                                            controller.setReserveType("event");
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => DayCalendar()),
+                                            );
+                                          },
                                           child: const Text('Para evento',
                                               style: TextStyle(fontSize: 20.0)),
                                         ),
@@ -231,11 +238,18 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                         margin: const EdgeInsets.only(
                                             top: 10.0, right: 10.0, left: 10.0),
                                         child: ElevatedButton(
-                                          onPressed: () => showDialog<String>(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                DayCalendar(),
-                                          ),
+                                          //onPressed: () => showDialog<String>(
+                                          //  context: context,
+                                          //  builder: (BuildContext context) =>
+                                          //      DayCalendar(),
+                                          //),
+                                          onPressed: (){
+                                            controller.setReserveType("personal");
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => DayCalendar()),
+                                            );
+                                          },
                                           child: const Text('Para mi',
                                               style: TextStyle(fontSize: 20.0)),
                                         ),

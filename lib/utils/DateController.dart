@@ -15,6 +15,8 @@ class DateController extends GetxController {
 
   var currentUserMeetings = [].obs;
 
+  var reservetype = "".obs;
+
   // filter
   Map filter = {
     'active': false,
@@ -29,6 +31,10 @@ class DateController extends GetxController {
   };
 
   // getters and setters
+  void setReserveType(String value) => reservetype.value = value;
+
+  void getReserveType() => reservetype.value;
+
   void setUser(String value) => user.value = value;
 
   void setEmail(String value) => email.value = value;
