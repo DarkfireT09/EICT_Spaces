@@ -220,7 +220,7 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                             builder: (BuildContext context) =>
                                                 DayCalendar(),
                                           ),
-                                          child: const Text('Todo el espacio',
+                                          child: const Text('Para evento',
                                               style: TextStyle(fontSize: 20.0)),
                                         ),
                                       ),
