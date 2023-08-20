@@ -92,8 +92,64 @@ class _SpaceDetailState extends State<SpaceDetail> {
                             formatList(space?['categories']) != ''? Column(
                               children: [
                                 Text(
+<<<<<<< Updated upstream
                                   //"Categoria: ${space?['category'].toString() ?? 'No category'}",
                                   "Categoria: ${formatList(space?['categories'])}",
+=======
+                                  (space?['name'] ?? 'No name') +
+                                      '-' +
+                                      (space?['campus'] ?? 'No campus'),
+                                  style: const TextStyle(
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 12.0),
+                                Text(
+                                  space?['dependency'].toString() ??
+                                      'No dependency', // dependencia
+                                  style: const TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  "Lugar: ${space?['location'].toString() ?? 'No location'}",
+                                  style: const TextStyle(
+                                    fontSize: 20.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  "Servicios: ${formatList(space?['services'])}",
+                                  style: const TextStyle(
+                                    fontSize: 20.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8.0),
+                                formatList(space?['categories']) != ''
+                                    ? Column(
+                                        children: [
+                                          Text(
+                                            //"Categoria: ${space?['category'].toString() ?? 'No category'}",
+                                            "Categoria: ${formatList(space?['categories'])}",
+                                            style: const TextStyle(
+                                              fontSize: 20.0,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const SizedBox(height: 8.0),
+                                        ],
+                                      )
+                                    : const SizedBox(height: 0.0),
+                                Text(
+                                  "Capacidad de estudiantes: ${space?['student_capacity'].toString() ?? 'No student capacity'}",
+>>>>>>> Stashed changes
                                   style: const TextStyle(
                                     fontSize: 20.0,
                                   ),
@@ -129,6 +185,70 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 8.0),
+<<<<<<< Updated upstream
+=======
+                                space?['area'] != ''
+                                    ? Column(
+                                        children: [
+                                          Text(
+                                            "Area(m²): ${space?['area'] ?? 'No area'}",
+                                            style: const TextStyle(
+                                              fontSize: 20.0,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const SizedBox(height: 8.0),
+                                        ],
+                                      )
+                                    : const SizedBox(height: 0.0),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 10.0),
+                                  child: const Text(
+                                    "Reservar:",
+                                    style: TextStyle(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        // big button
+                                        width: (MediaQuery.of(context).size.width-72)/2,
+                                        height: 40,
+                                        margin: const EdgeInsets.only(
+                                            top: 10.0, right: 10.0,  left: 10.0),
+                                        child: ElevatedButton(
+                                          onPressed: () => showDialog<String>(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                DatePicker(),
+                                          ),
+                                          child: const Text('Todo el espacio',
+                                              style: TextStyle(fontSize: 20.0)),
+                                        ),
+                                      ),
+                                      Container(
+                                        // big button
+                                        width: (MediaQuery.of(context).size.width-72)/2,
+                                        height: 40,
+                                        margin: const EdgeInsets.only(
+                                            top: 10.0, right: 10.0, left: 10.0),
+                                        child: ElevatedButton(
+                                          onPressed: () => showDialog<String>(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                DatePicker(),
+                                          ),
+                                          child: const Text('Para mi',
+                                              style: TextStyle(fontSize: 20.0)),
+                                        ),
+                                      ),
+                                    ])
+>>>>>>> Stashed changes
                               ],
                             ): const SizedBox(height: 0.0),
                             Container(
@@ -161,7 +281,6 @@ class _SpaceDetailState extends State<SpaceDetail> {
               child: CircularProgressIndicator(),
             );
           }),
-
     );
   }
 }
