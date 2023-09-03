@@ -221,7 +221,7 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                           //      DayCalendar(),
                                           //),
                                           onPressed: (){
-                                            controller.setReserveType("event");
+                                            controller.setReserveType("EVENT");
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(builder: (context) => DayCalendar()),
@@ -244,7 +244,7 @@ class _SpaceDetailState extends State<SpaceDetail> {
                                           //      DayCalendar(),
                                           //),
                                           onPressed: (){
-                                            controller.setReserveType("personal");
+                                            controller.setReserveType("PERSONAL");
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(builder: (context) => DayCalendar()),

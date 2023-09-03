@@ -184,6 +184,7 @@ class _DatePickerState extends State<DatePicker> {
                           TextButton(
                             onPressed: (){
                               // go to home
+                              controller.addMeetings();
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();

@@ -50,6 +50,7 @@ class _DayCalendarState extends State<DayCalendar> {
   final CalendarController _calendarController = CalendarController();
   MeetingDataSource? events;
   var userMeetings = <Meeting>[];
+  var full_hour_appointments = <Meeting>[];
   @override
   void initState() {
     // _initializeEventColor();
@@ -59,6 +60,27 @@ class _DayCalendarState extends State<DayCalendar> {
       });
     });
     super.initState();
+  }
+
+  Future<int> getCurrentCapacity(details, hour) async {
+    DateTime from = DateTime(
+        details.date!.year,
+        details.date!.month,
+        details.date!.day,
+        hour,
+        0);
+    DateTime to = DateTime(
+        details.date!.year,
+        details.date!.month,
+        details.date!.day,
+        hour+1,
+        0);
+    var count = await db.collection("bookings").where("type", isEqualTo: "PERSONAL").where("from", isEqualTo: from).where("to", isEqualTo: to).count().get().then(
+          (res) => res.count,
+      onError: (e) => print("Error completing: $e"),
+    );
+    return count;
+
   }
 
   Future<void> getDataFromFireStore() async {
@@ -77,6 +99,7 @@ class _DayCalendarState extends State<DayCalendar> {
               e.data()['reason'],
               e.data()['by'],
               e.data()['space_id'],
+              e.data()['type'],
               e.id,
             ))
         .toList();
@@ -98,6 +121,7 @@ class _DayCalendarState extends State<DayCalendar> {
         "",
         {},
         "",
+        "",
       );
     }));
     list.addAll(
@@ -115,9 +139,13 @@ class _DayCalendarState extends State<DayCalendar> {
           "",
           {},
           "",
+          "",
         );
       }),
     );
+
+
+
     setState(() {
       events = MeetingDataSource(list+userMeetings);
     });
@@ -187,7 +215,7 @@ class _DayCalendarState extends State<DayCalendar> {
             }
           },
 
-          onTap: (CalendarTapDetails details) {
+          onTap: (CalendarTapDetails details) async {
             if (_calendarController.view == CalendarView.month &&
                 details.targetElement == CalendarElement.calendarCell) {
               // if selected day before today
@@ -202,6 +230,15 @@ class _DayCalendarState extends State<DayCalendar> {
               _calendarController.view = CalendarView.day;
               _calendarController.displayDate = details.date!;
             } else if (_calendarController.view == CalendarView.day) {
+
+              for (var hour = 7; hour < 18; hour++){
+                int count = await getCurrentCapacity(details, hour);
+                print("count: $count");
+
+                if (count >= controller.getSpaceCapacity()){
+                  full_hour_appointments.add(hour);
+                }
+              }
               _dayTapUserHandler(details);
             }
           },
@@ -329,7 +366,7 @@ class _DayCalendarState extends State<DayCalendar> {
       count++;
 
       var newMeeting = Meeting("${start.hour}:00 - ${end.hour}:00", start, end, Colors.blueGrey,
-          false, "NON SUBMITTED", "", {}, id);
+          false, "NON SUBMITTED", "", {}, "", id);
       // addMeeting(newMeeting);
       userMeetings.add(newMeeting);
 
@@ -424,7 +461,7 @@ class MeetingDataSource extends CalendarDataSource {
 class Meeting {
   /// Creates a meeting class with required details.
   Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay,
-      this.status, this.reason, this.by, this.spaceId, [this.bookingId = ""]);
+      this.status, this.reason, this.by, this.spaceId, this.type, [this.bookingId = ""]);
 
   /// Event name which is equivalent to subject property of [Appointment].
   String eventName;
@@ -448,6 +485,8 @@ class Meeting {
   Map by;
 
   String spaceId;
+
+  String type;
 
   String bookingId;
 }

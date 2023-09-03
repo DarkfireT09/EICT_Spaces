@@ -123,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                                 onTap: () {
                                   controller.setSpaceId(spaces?[index]['id']);
+                                  controller.setSpaceCapacity(spaces?[index]['student_capacity']);
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(

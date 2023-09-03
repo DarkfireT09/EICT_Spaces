@@ -9,7 +9,9 @@ class DateController extends GetxController {
   var currentEventName = ''.obs;
   var currentDescription = ''.obs;
 
-  var space_id = "".obs; // TODO: obtain from space selection
+  var space_id = "".obs;
+  var space_capacity = 0.obs;
+
 
   var db = FirebaseFirestore.instance;
 
@@ -54,6 +56,8 @@ class DateController extends GetxController {
 
   void setCurrentUserMeetings(List value) => currentUserMeetings.value = value;
 
+  void setSpaceCapacity(int value) => space_capacity.value = value;
+
   String getUser() => user.value;
 
   String getEmail() => email.value;
@@ -76,6 +80,8 @@ class DateController extends GetxController {
     };
   }
 
+  int getSpaceCapacity() => space_capacity.value;
+
   Future<String> getSpaceNameFromId(String id) async {
     var db = FirebaseFirestore.instance;
     var space = await db.collection('spaces').doc(id).get();
@@ -97,7 +103,8 @@ class DateController extends GetxController {
         "to": meeting.to,
         "status": "PENDING",
         "reason": getCurrentDescription(),
-        "space_id": meeting.spaceId
+        "space_id": meeting.spaceId,
+        "type": reservetype.value,
       });
     }
   }

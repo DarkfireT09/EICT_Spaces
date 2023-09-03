@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class LinkedLabelCheckbox extends StatelessWidget {
-  const LinkedLabelCheckbox({
+  LinkedLabelCheckbox({
     super.key,
     required this.label,
     required this.padding,

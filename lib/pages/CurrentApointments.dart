@@ -101,9 +101,11 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
               e.data()['reason'],
               e.data()['by'],
               e.data()['space_id'],
+              e.data()['type'],
               e.id,
             ))
         .toList();
+
 
     setState(() {
       events = MeetingDataSource(list);
@@ -245,7 +247,7 @@ class MeetingDataSource extends CalendarDataSource {
 class Meeting {
   /// Creates a meeting class with required details.
   Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay,
-      this.status, this.reason, this.by, this.spaceId, [this.bookingId = ""]);
+      this.status, this.reason, this.by, this.spaceId, this.type, [this.bookingId = ""]);
 
   /// Event name which is equivalent to subject property of [Appointment].
   String eventName;
@@ -269,6 +271,8 @@ class Meeting {
   Map by;
 
   String spaceId;
+
+  String type;
 
   String bookingId;
 }
